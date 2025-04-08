@@ -6,12 +6,30 @@
 # - Doesn't overwrite existing files unless forced
 # - Replaces missing files
 # - Overwrites existing files when force flag is used
+# Usage: ./test_bootstrap.sh [--no-cleanup]
 
 set -e  # Exit on error
 
-# Create a temporary test directory
-TEST_DIR=$(mktemp -d)
-echo "Using temporary test directory: $TEST_DIR"
+# Parse command line arguments
+CLEANUP=true
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --no-cleanup)
+      CLEANUP=false
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Usage: ./test_bootstrap.sh [--no-cleanup]"
+      exit 1
+      ;;
+  esac
+done
+
+# Create a temporary test directory in the local project
+TEST_DIR="./test_bootstrap_$(date +%s)"
+mkdir -p "$TEST_DIR"
+echo "Using test directory: $TEST_DIR"
 echo ""
 
 # Define colors for output
@@ -97,5 +115,14 @@ fi
 
 echo ""
 echo -e "${GREEN}All tests passed successfully!${NC}"
-echo "Temporary directory: $TEST_DIR"
-echo "You can clean it up with: rm -rf $TEST_DIR"
+echo "Test directory: $TEST_DIR"
+
+# Clean up the test directory unless --no-cleanup was specified
+if [ "$CLEANUP" = true ]; then
+  echo "Cleaning up test directory..."
+  rm -rf "$TEST_DIR"
+  echo "Test directory removed."
+else
+  echo "Test directory was preserved: $TEST_DIR"
+  echo "You can clean it up with: rm -rf $TEST_DIR"
+fi

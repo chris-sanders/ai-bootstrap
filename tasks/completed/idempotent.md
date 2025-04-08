@@ -33,17 +33,22 @@ None
 - [x] Path to created/modified files: 
   - Modified agentic-bootstrap.sh to add --force flag and idempotent file creation
   - Created test_bootstrap.sh to validate the changes
+  - Updated CLAUDE.md with guidance on directory usage
+  - Added documentation for the test script in docs/components/
 - [x] Summary of changes made:
   1. Added --force flag to the bootstrap script
   2. Added a helper function to check if files exist before creating
   3. Modified file creation to skip existing files unless forced
   4. Created a comprehensive test script that verifies all success criteria
   5. Updated help messages to document the new --force option
+  6. Fixed test script to use local directories instead of system temp directories
+  7. Added --no-cleanup option to test script for debugging
+  8. Updated AI guidelines to prohibit using directories outside the project
 
 ## Notes
 The implementation uses a temp file approach for heredocs to avoid complex variable substitution issues.
 
 ## Progress Updates
-(To be filled by AI during implementation)
 2025-04-08: Started working on the task. Planning to implement idempotent behavior and add a --force flag.
 2025-04-08: Completed the task with implementation of --force flag, idempotent file creation logic, and test script.
+2025-04-08: Updated implementation to address issue with test script using system temp directories instead of local project directories.

@@ -20,7 +20,8 @@ The test bootstrap script validates the idempotent behavior of the agentic-boots
 - Standard Unix utilities (mktemp, grep, echo)
 
 ## Design Decisions
-- Uses a temporary directory for testing to avoid modifying the actual repository
+- Uses a local test directory within the project (not system temp directories)
+- Automatically cleans up test files after execution unless --no-cleanup is specified
 - Employs color-coded output for better readability of test results
 - Tests each success criterion individually in a sequential manner
 - Implements early exit on failure to prevent cascading test failures
@@ -31,6 +32,11 @@ The test bootstrap script validates the idempotent behavior of the agentic-boots
 Basic usage:
 ```bash
 ./test_bootstrap.sh
+```
+
+Run without cleaning up test files:
+```bash
+./test_bootstrap.sh --no-cleanup
 ```
 
 Example output:

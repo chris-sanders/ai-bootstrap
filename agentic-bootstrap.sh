@@ -136,6 +136,8 @@ When implementing solutions:
 2. Write clean, well-documented code
 3. Add appropriate tests
 4. Update documentation to reflect changes
+5. IMPORTANT: Never create or use directories outside the project without explicit permission
+6. For testing, always use local directories within the project and provide cleanup mechanisms
 
 ## Communication Format
 

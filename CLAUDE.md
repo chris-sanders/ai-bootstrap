@@ -22,6 +22,8 @@ This repository contains the "AI Bootstrap" project, which provides a standardiz
 - Error handling: use `set -e` and check return values
 - Follow markdown best practices for documentation files
 - Use consistent formatting with 2-space indentation in markdown
+- IMPORTANT: Never create or use directories outside the current project without explicit permission
+- For testing, always use local directories within the project and provide cleanup mechanisms
 
 ## Documentation
 - Document components in `/docs/components/`
