@@ -21,14 +21,14 @@ AI agents have become increasingly capable of helping with software development 
 git clone https://github.com/yourusername/ai-bootstrap.git
 
 # Run the bootstrap script in your project
-./ai-bootstrap/aigentic-bootstrap.sh /path/to/your/project
+./ai-bootstrap/agentic-bootstrap.sh /path/to/your/project
 ```
 
 ## Usage
 
 1. Create tasks in the `/tasks/backlog/` directory using the provided template
 2. Move tasks to `/tasks/ready/` when they're fully defined and ready for implementation
-3. Point an AI agent to your project and instruct it to read `/docs/aigentic/ai-readme.md`
+3. Point an AI agent to your project and instruct it to read `/docs/agentic/ai-readme.md`
 4. The AI agent will find tasks in the ready folder, work on them, and move them to the completed folder
 5. Review and integrate the AI agent's work
 

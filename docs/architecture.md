@@ -8,7 +8,7 @@ The AI Bootstrap project defines a minimalist but functional workflow for managi
 ## Components
 
 ### Directory Structure
-- `/docs/aigentic/`: Contains configuration and instructions for AI agents
+- `/docs/agentic/`: Contains configuration and instructions for AI agents
   - `templates/`: Reusable templates for tasks and documentation
   - `ai-readme.md`: Instructions for AI agents on how to work within the project
 - `tasks/`: Contains task descriptions organized by status
@@ -22,7 +22,7 @@ The AI Bootstrap project defines a minimalist but functional workflow for managi
   - `architecture.md`: This document
 
 ### Bootstrap Script
-The `aigentic-bootstrap.sh` script initializes the directory structure and creates template files in a target project. It is designed to be run once to set up the workflow.
+The `agentic-bootstrap.sh` script initializes the directory structure and creates template files in a target project. It is designed to be run once to set up the workflow.
 
 ### Workflow Process
 The workflow follows a simple task lifecycle:

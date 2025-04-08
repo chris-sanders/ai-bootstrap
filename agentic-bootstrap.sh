@@ -1,7 +1,7 @@
 #!/bin/bash
 # AI Agent Development Workflow Bootstrap Script
-# This script sets up the aigentic workflow structure in your project
-# Usage: ./aigentic-bootstrap.sh [options] [project_directory]
+# This script sets up the agentic workflow structure in your project
+# Usage: ./agentic-bootstrap.sh [options] [project_directory]
 # Options:
 #   --with-adr  Include ADR (Architecture Decision Records) documentation
 
@@ -24,14 +24,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-AIGENTIC_DIR="$PROJECT_DIR/docs/aigentic"
+AGENTIC_DIR="$PROJECT_DIR/docs/agentic"
 TASKS_DIR="$PROJECT_DIR/tasks"
 DOCS_DIR="$PROJECT_DIR/docs"
 
 echo "Setting up AI Agent Development Workflow in $PROJECT_DIR"
 
 # Create directory structure
-mkdir -p "$AIGENTIC_DIR/templates"
+mkdir -p "$AGENTIC_DIR/templates"
 mkdir -p "$TASKS_DIR/backlog" "$TASKS_DIR/ready" "$TASKS_DIR/started" "$TASKS_DIR/completed"
 mkdir -p "$DOCS_DIR/components"
 
@@ -42,7 +42,7 @@ if [ "$INCLUDE_ADR" = true ]; then
 fi
 
 # Create AI readme file
-cat > "$AIGENTIC_DIR/ai-readme.md" << 'EOF'
+cat > "$AGENTIC_DIR/ai-readme.md" << 'EOF'
 # AI Agent Instructions
 
 This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
@@ -125,10 +125,8 @@ EOF
 # Note: context-map.md has been removed. Project architecture is documented in docs/architecture.md instead
 
 # Create task template
-cat > "$AIGENTIC_DIR/templates/task-template.md" << 'EOF'
-# Task: [Task Title] [TASK-ID]
-
-> **Status**: ready | **Priority**: [high|medium|low] | **Assigned**: [ai-agent|human-developer]
+cat > "$AGENTIC_DIR/templates/task-template.md" << 'EOF'
+# Task: [Task Title]
 
 ## Objective
 [Clear, measurable objective of this task]
@@ -155,8 +153,9 @@ cat > "$AIGENTIC_DIR/templates/task-template.md" << 'EOF'
 
 ## Evidence of Completion
 (To be filled by AI)
-- [ ] [Expected evidence 1]
-- [ ] [Expected evidence 2]
+- [ ] Command output or logs demonstrating completion
+- [ ] Path to created/modified files
+- [ ] Summary of changes made
 
 ## Notes
 [Any additional information]
@@ -166,7 +165,7 @@ cat > "$AIGENTIC_DIR/templates/task-template.md" << 'EOF'
 EOF
 
 # Create component documentation template
-cat > "$AIGENTIC_DIR/templates/component-doc.md" << 'EOF'
+cat > "$AGENTIC_DIR/templates/component-doc.md" << 'EOF'
 # Component: [Component Name]
 
 ## Purpose
@@ -243,9 +242,7 @@ fi
 
 # Create a sample task
 cat > "$TASKS_DIR/backlog/TASK-001-example.md" << 'EOF'
-# Task: Example Task [TASK-001]
-
-> **Status**: backlog | **Priority**: medium | **Assigned**: ai-agent | **Tags**: example, documentation
+# Task: Example Task
 
 ## Objective
 Create a simple "Hello World" example to verify the project setup.
@@ -272,7 +269,8 @@ None
 
 ## Evidence of Completion
 (To be filled by AI)
-- [ ] Screenshot or log showing successful execution
+- [ ] Command output or logs showing successful execution
+- [ ] Path to created/modified files
 - [ ] Link to documentation files
 
 ## Notes
@@ -287,7 +285,7 @@ echo ""
 echo "Next steps:"
 echo "1. Customize the architecture documentation in $DOCS_DIR/architecture.md"
 echo "2. Review the sample task in $TASKS_DIR/backlog/TASK-001-example.md"
-echo "3. Create additional tasks using the template in $AIGENTIC_DIR/templates/task-template.md"
+echo "3. Create additional tasks using the template in $AGENTIC_DIR/templates/task-template.md"
 echo ""
 if [ "$INCLUDE_ADR" = true ]; then
   echo "4. Create ADRs in $DOCS_DIR/decisions/ to document architecture decisions"
@@ -296,7 +294,7 @@ fi
 echo "To start working with an AI agent:"
 echo "1. Move tasks from backlog to ready when they're fully defined and ready for implementation"
 echo "2. Point the AI agent to your project repository"
-echo "3. Instruct it to read $AIGENTIC_DIR/ai-readme.md first"
+echo "3. Instruct it to read $AGENTIC_DIR/ai-readme.md first"
 echo "4. The agent will find tasks in the ready folder and begin working"
 echo ""
 echo "Note: To include Architecture Decision Records, use the --with-adr flag when running this script."

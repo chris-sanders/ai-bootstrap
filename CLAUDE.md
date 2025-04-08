@@ -9,7 +9,7 @@ This repository contains the "AI Bootstrap" project, which provides a standardiz
 - Process guidelines for AI agents
 
 ## Task Management
-- Follow the workflow defined in `/docs/aigentic/ai-readme.md`
+- Follow the workflow defined in `/docs/agentic/ai-readme.md`
 - Find tasks in `/tasks/ready/` assigned to AI agents
 - Move tasks through the workflow: backlog → ready → started → completed
 - Update task metadata when changing status (see task template for format)

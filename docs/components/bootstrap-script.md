@@ -1,4 +1,4 @@
-# Component: Bootstrap Script (aigentic-bootstrap.sh)
+# Component: Bootstrap Script (agentic-bootstrap.sh)
 
 ## Purpose
 The bootstrap script initializes the AI agent workflow structure in a target project. It creates the necessary directories and template files to enable a standardized task management process.
@@ -28,12 +28,12 @@ The bootstrap script initializes the AI agent workflow structure in a target pro
 
 Basic usage (in current directory):
 ```bash
-./aigentic-bootstrap.sh
+./agentic-bootstrap.sh
 ```
 
 Specify a target directory:
 ```bash
-./aigentic-bootstrap.sh /path/to/project
+./agentic-bootstrap.sh /path/to/project
 ```
 
-After running, point AI agents to the .aigentic/ai-readme.md file to get started with the workflow.
+After running, point AI agents to the docs/agentic/ai-readme.md file to get started with the workflow.

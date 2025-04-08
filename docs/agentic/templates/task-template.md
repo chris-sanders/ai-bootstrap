@@ -1,6 +1,5 @@
-# Task: [Task Title] [TASK-ID]
+# Task: [Task Title]
 
-> **Status**: ready | **Priority**: [high|medium|low] | **Assigned**: [ai-agent|human-developer]
 
 ## Objective
 [Clear, measurable objective of this task]
@@ -27,8 +26,9 @@
 
 ## Evidence of Completion
 (To be filled by AI)
-- [ ] [Expected evidence 1]
-- [ ] [Expected evidence 2]
+- [ ] Command output or logs demonstrating completion
+- [ ] Path to created/modified files
+- [ ] Summary of changes made
 
 ## Notes
 [Any additional information]

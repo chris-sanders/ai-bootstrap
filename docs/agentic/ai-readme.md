@@ -7,15 +7,12 @@ This document provides guidance on how to work within this project's development
 As an AI agent, you should:
 
 1. **Find tasks to work on**:
-   - Look in `/tasks/ready/` for tasks marked with `**Assigned**: ai-agent`
-   - Sort by priority (high → medium → low)
+   - Look in `/tasks/ready/` for tasks to work on
    - Check dependencies to ensure they are completed
 
 2. **Start working on a task**:
    - Move the task file from `/tasks/ready/` to `/tasks/started/`
-   - Update the task's metadata line:
-     - Change `**Status**: ready` to `**Status**: started` 
-     - Add `**Started**: YYYY-MM-DD` with today's date
+   - Add a note with the current date in the Progress Updates section
 
 3. **Work on the task**:
    - Follow the implementation plan in the task file
@@ -26,9 +23,7 @@ As an AI agent, you should:
 4. **Complete a task**:
    - Verify all success criteria are met
    - Document evidence of completion
-   - Update the task's metadata line:
-     - Change `**Status**: started` to `**Status**: completed`
-     - Add `**Completed**: YYYY-MM-DD` with today's date
+   - Add a completion note with the current date in the Progress Updates section
    - Move the task file from `/tasks/started/` to `/tasks/completed/`
    - Update relevant documentation in `/docs/` if necessary
 
