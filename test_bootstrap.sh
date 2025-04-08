@@ -27,7 +27,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Create a temporary test directory in the local project
-TEST_DIR="./test_bootstrap_$(date +%s)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEST_DIR="${SCRIPT_DIR}/test_bootstrap_$(date +%s)"
 mkdir -p "$TEST_DIR"
 echo "Using test directory: $TEST_DIR"
 echo ""
@@ -121,7 +122,15 @@ echo "Test directory: $TEST_DIR"
 if [ "$CLEANUP" = true ]; then
   echo "Cleaning up test directory..."
   rm -rf "$TEST_DIR"
-  echo "Test directory removed."
+  
+  # Verify the cleanup was successful
+  if [ -d "$TEST_DIR" ]; then
+    echo -e "${RED}ERROR: Failed to remove test directory!${NC}"
+    echo "Manual cleanup required: rm -rf $TEST_DIR"
+    exit 1
+  else
+    echo -e "${GREEN}Test directory successfully removed.${NC}"
+  fi
 else
   echo "Test directory was preserved: $TEST_DIR"
   echo "You can clean it up with: rm -rf $TEST_DIR"
