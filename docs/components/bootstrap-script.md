@@ -8,9 +8,12 @@ The bootstrap script initializes the AI agent workflow structure in a target pro
 - Generate template files for task management and documentation
 - Provide initial guidance for using the workflow
 - Set up an example task to demonstrate the workflow
+- Safely handle existing files (idempotent operation)
 
 ## Interfaces
-- **Input**: Optional project directory path (defaults to current directory)
+- **Input**: 
+  - Optional project directory path (defaults to current directory)
+  - Optional flags (--with-adr, --force)
 - **Output**: Directory structure and template files created in the target location
 
 ## Dependencies
@@ -23,6 +26,8 @@ The bootstrap script initializes the AI agent workflow structure in a target pro
 - Provides helpful output to guide the user on next steps
 - Uses here-documents (EOF) to create template files with proper formatting
 - Sets `-e` flag to fail fast if any errors occur during execution
+- Idempotent by default (doesn't overwrite existing files unless forced)
+- Uses temporary files to handle heredoc content creation safely
 
 ## Examples
 
@@ -34,6 +39,16 @@ Basic usage (in current directory):
 Specify a target directory:
 ```bash
 ./agentic-bootstrap.sh /path/to/project
+```
+
+Include Architecture Decision Records:
+```bash
+./agentic-bootstrap.sh --with-adr
+```
+
+Force overwrite of existing files:
+```bash
+./agentic-bootstrap.sh --force
 ```
 
 After running, point AI agents to the docs/agentic/ai-readme.md file to get started with the workflow.

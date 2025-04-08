@@ -4,17 +4,23 @@
 # Usage: ./agentic-bootstrap.sh [options] [project_directory]
 # Options:
 #   --with-adr  Include ADR (Architecture Decision Records) documentation
+#   --force     Overwrite existing files even if they already exist
 
 set -e
 
 # Parse command line arguments
 INCLUDE_ADR=false
+FORCE=false
 PROJECT_DIR="."
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --with-adr)
       INCLUDE_ADR=true
+      shift
+      ;;
+    --force)
+      FORCE=true
       shift
       ;;
     *)
@@ -27,6 +33,38 @@ done
 AGENTIC_DIR="$PROJECT_DIR/docs/agentic"
 TASKS_DIR="$PROJECT_DIR/tasks"
 DOCS_DIR="$PROJECT_DIR/docs"
+
+# Helper function to create files idempotently
+create_file() {
+  local file_path="$1"
+  local content_file="$2"
+  
+  # Create directories if they don't exist
+  mkdir -p "$(dirname "$file_path")"
+  
+  # Only create/overwrite the file if it doesn't exist or force is enabled
+  if [ ! -f "$file_path" ] || [ "$FORCE" = true ]; then
+    cat "$content_file" > "$file_path"
+    echo "Created: $file_path"
+  else
+    echo "Skipped: $file_path (already exists, use --force to overwrite)"
+  fi
+}
+
+# Function to create a file with content from a heredoc
+create_file_with_content() {
+  local file_path="$1"
+  local temp_file=$(mktemp)
+  
+  # Write stdin content to temp file
+  cat > "$temp_file"
+  
+  # Create the actual file
+  create_file "$file_path" "$temp_file"
+  
+  # Clean up temp file
+  rm "$temp_file"
+}
 
 echo "Setting up AI Agent Development Workflow in $PROJECT_DIR"
 
@@ -42,7 +80,7 @@ if [ "$INCLUDE_ADR" = true ]; then
 fi
 
 # Create AI readme file
-cat > "$AGENTIC_DIR/ai-readme.md" << 'EOF'
+cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
 # AI Agent Instructions
 
 This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
@@ -125,7 +163,7 @@ EOF
 # Note: context-map.md has been removed. Project architecture is documented in docs/architecture.md instead
 
 # Create task template
-cat > "$AGENTIC_DIR/templates/task-template.md" << 'EOF'
+cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/task-template.md"
 # Task: [Task Title]
 
 ## Objective
@@ -165,7 +203,7 @@ cat > "$AGENTIC_DIR/templates/task-template.md" << 'EOF'
 EOF
 
 # Create component documentation template
-cat > "$AGENTIC_DIR/templates/component-doc.md" << 'EOF'
+cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/component-doc.md"
 # Component: [Component Name]
 
 ## Purpose
@@ -193,7 +231,7 @@ cat > "$AGENTIC_DIR/templates/component-doc.md" << 'EOF'
 EOF
 
 # Create architecture document
-cat > "$DOCS_DIR/architecture.md" << 'EOF'
+cat << 'EOF' | create_file_with_content "$DOCS_DIR/architecture.md"
 # System Architecture
 
 This document describes the overall system architecture.
@@ -216,7 +254,7 @@ EOF
 
 # Create ADR template if enabled
 if [ "$INCLUDE_ADR" = true ]; then
-  cat > "$DOCS_DIR/decisions/ADR-template.md" << 'EOF'
+  cat << 'EOF' | create_file_with_content "$DOCS_DIR/decisions/ADR-template.md"
 # Decision Record: [Title]
 
 ## Status
@@ -241,7 +279,7 @@ EOF
 fi
 
 # Create a sample task
-cat > "$TASKS_DIR/backlog/TASK-001-example.md" << 'EOF'
+cat << 'EOF' | create_file_with_content "$TASKS_DIR/backlog/TASK-001-example.md"
 # Task: Example Task
 
 ## Objective
@@ -297,4 +335,6 @@ echo "2. Point the AI agent to your project repository"
 echo "3. Instruct it to read $AGENTIC_DIR/ai-readme.md first"
 echo "4. The agent will find tasks in the ready folder and begin working"
 echo ""
-echo "Note: To include Architecture Decision Records, use the --with-adr flag when running this script."
+echo "Script options:"
+echo "- To include Architecture Decision Records: --with-adr"
+echo "- To force overwrite of existing files: --force"
