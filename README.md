@@ -18,15 +18,11 @@ AI agents have become increasingly capable of helping with software development 
 
 ### Option 1: Direct Installation (Recommended)
 
-You can set up the AI Bootstrap workflow directly in your project with a single command:
+You can set up the AI Bootstrap workflow directly from the root of your project with a single command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | bash -s -- [options] [project_directory]
+curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | bash
 ```
-
-Available options:
-- `--with-adr`: Include Architecture Decision Records documentation
-- `--force`: Force overwrite of existing files
 
 ### Option 2: Clone and Run
 
@@ -35,7 +31,7 @@ Available options:
 git clone https://github.com/chris-sanders/ai-bootstrap.git
 
 # Run the bootstrap script in your project
-./ai-bootstrap/agentic-bootstrap.sh [options] [project_directory]
+./ai-bootstrap/agentic-bootstrap.sh
 ```
 
 ## Usage
@@ -67,7 +63,7 @@ When using the curl | bash installation method, it's always a good practice to e
 curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | less
 
 # Then run it if you're comfortable with what it does
-curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | bash -s -- [options]
+curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | bash
 ```
 
 The bootstrap script is designed to be non-destructive (it won't overwrite existing files unless you use the `--force` flag) and operates only within the specified project directory.
