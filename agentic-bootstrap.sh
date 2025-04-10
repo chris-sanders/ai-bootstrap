@@ -105,7 +105,8 @@ This document provides guidance on how to work within this project's development
 As an AI agent, you should:
 
 1. **Find tasks to work on**:
-   - Look in `/tasks/ready/` for tasks to work on
+   - Look in `/tasks/ready/` for new tasks to implement
+   - Check in `/tasks/review/` for tasks needing PR feedback responses
    - Check dependencies to ensure they are completed
 
 2. **Start working on a task**:
@@ -132,25 +133,30 @@ As an AI agent, you should:
      - Use the task name as the PR title
      - Include summary of changes and test plan in the PR body
    - Update the task's metadata:
+     - Change `**Status**: started` to `**Status**: review`
      - Add `**PR**: #[PR-number]` 
      - Add `**PR URL**: [PR-URL]`
      - Add `**PR Status**: Open`
    - Add a progress note with PR creation details
-   - Keep the task in the `/tasks/started/` folder while PR is under review
+   - Move the task file from `/tasks/started/` to `/tasks/review/` folder
 
 5. **Handle PR Feedback**:
    - Make requested changes to address PR feedback
+   - When responding to PR comments:
+     - Always prefix comments with 🤖 emoji
+     - Always end comments with a signature: `---\n[Comment by AI Assistant]`
+     - Example: `🤖 Feedback addressed in latest commit\n\n---\n[Comment by AI Assistant]`
    - Commit changes with descriptive messages
    - Update the task progress with details of changes
-   - Keep the task in the `/tasks/started/` folder until PR is merged
+   - Keep the task in the `/tasks/review/` folder until PR is merged
 
 6. **Complete a task** (after PR is merged):
    - Update the task's metadata:
-     - Change `**Status**: started` to `**Status**: completed`
+     - Change `**Status**: review` to `**Status**: completed`
      - Add `**Completed**: YYYY-MM-DD` with today's date
      - Update `**PR Status**: Merged`
    - Document evidence of completion
-   - Move the task file from `/tasks/started/` to `/tasks/completed/`
+   - Move the task file from `/tasks/review/` to `/tasks/completed/`
    - Update relevant documentation in `/docs/` if necessary
 
 7. **Report completion**:
@@ -327,9 +333,10 @@ mcp__github__create_pull_request:
 
 ### Updating Task with PR Information
 
-After creating a PR, update the task file with:
+After creating a PR, update the task file metadata and move it to the review folder:
 
 ```
+**Status**: review
 **PR**: #[PR-number]
 **PR URL**: [PR-URL]
 **PR Status**: Open
@@ -361,12 +368,14 @@ mcp__github__merge_pull_request:
 
 After merging:
 1. Update the task file with `**PR Status**: Merged`
-2. Move the task from `started` to `completed` folder
+2. Move the task from `review` to `completed` folder
 3. Update the task status to `completed` with completion date
 
 ## Review Workflows
 
 ### Adding PR Comments
+
+Always include AI attribution in comments to distinguish between human and AI responses:
 
 ```
 # Format
@@ -375,7 +384,21 @@ mcp__github__create_pull_request_review:
   repo: [repository-name]
   pullNumber: [PR-number]
   event: "COMMENT"  # or "APPROVE" or "REQUEST_CHANGES"
-  body: "Comment text"
+  body: "🤖 Comment text\n\n---\n[Comment by AI Assistant]"
+```
+
+### Comment Attribution Format
+
+All AI-generated comments must follow this format:
+1. Start with 🤖 emoji to visually flag AI-generated content
+2. End with a signature block after a horizontal rule
+
+Example:
+```
+🤖 [Comment content here]
+
+---
+[Comment by AI Assistant]
 ```
 
 ### Approving a PR
@@ -387,7 +410,7 @@ mcp__github__create_pull_request_review:
   repo: [repository-name]
   pullNumber: [PR-number]
   event: "APPROVE"
-  body: "Approval comment"
+  body: "🤖 Approval comment\n\n---\n[Comment by AI Assistant]"
 ```
 
 ## Important Notes
@@ -395,8 +418,9 @@ mcp__github__create_pull_request_review:
 - MCP tool configuration is handled at the user level in Claude Code, not at the project level
 - This guide only covers workflow instructions for GitHub operations
 - When the GitHub workflow is enabled, creating PRs is a standard part of task completion
-- Tasks remain in the "started" folder while PRs are under review
-- Tasks only move to "completed" after PR is merged
+- Task workflow: backlog → ready → started → review → completed
+- Tasks move from "started" to "review" folder when PR is created
+- Tasks move from "review" to "completed" after PR is merged
 EOF
 
 else
@@ -411,7 +435,8 @@ This document provides guidance on how to work within this project's development
 As an AI agent, you should:
 
 1. **Find tasks to work on**:
-   - Look in `/tasks/ready/` for tasks to work on
+   - Look in `/tasks/ready/` for new tasks to implement
+   - Check in `/tasks/review/` for tasks needing PR feedback responses
    - Check dependencies to ensure they are completed
 
 2. **Start working on a task**:

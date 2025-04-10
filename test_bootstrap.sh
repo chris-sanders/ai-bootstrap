@@ -129,6 +129,8 @@ run_test "Initial creation" "Created:" "./agentic-bootstrap.sh" || exit 1
 check_file_exists "./docs/agentic/ai-readme.md" true "AI readme file created" || exit 1
 check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide created (default)" || exit 1
 check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" true "AI readme contains GitHub section" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "tasks/review" true "AI readme includes review folder in workflow" || exit 1
+check_file_content "./docs/agentic/github-mcp-guide.md" "Comment Attribution Format" true "GitHub MCP guide includes comment attribution section" || exit 1
 echo ""
 
 # Test 2: Second run - should skip existing files

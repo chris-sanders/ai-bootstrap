@@ -123,3 +123,4 @@ None
 2025-04-10: Created PR #1 for the task using MCP tools as documented in the guide.
 2025-04-10: Received PR feedback about including detailed information in the PR description. Updated PR description to include files modified, changes made, and important notes.
 2025-04-10: Received PR feedback to enhance the workflow with a "review" stage. Created tasks/review folder and moved task from "started" to "review" folder to reflect its current status awaiting PR review.
+2025-04-10: Received PR feedback to add AI attribution to PR comments. Updated GitHub MCP guide and AI instructions to include attribution conventions (emoji prefix and signature). Updated tests to verify these changes.

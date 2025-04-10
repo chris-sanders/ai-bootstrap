@@ -47,6 +47,10 @@ As an AI agent, you should:
 
 5. **Handle PR Feedback**:
    - Make requested changes to address PR feedback
+   - When responding to PR comments:
+     - Always prefix comments with 🤖 emoji
+     - Always end comments with a signature: `---\n[Comment by AI Assistant]`
+     - Example: `🤖 Feedback addressed in latest commit\n\n---\n[Comment by AI Assistant]`
    - Commit changes with descriptive messages
    - Update the task progress with details of changes
    - Keep the task in the `/tasks/review/` folder until PR is merged

@@ -143,6 +143,8 @@ After merging:
 
 ### Adding PR Comments
 
+Always include AI attribution in comments to distinguish between human and AI responses:
+
 ```
 # Format
 mcp__github__create_pull_request_review:
@@ -150,7 +152,21 @@ mcp__github__create_pull_request_review:
   repo: [repository-name]
   pullNumber: [PR-number]
   event: "COMMENT"  # or "APPROVE" or "REQUEST_CHANGES"
-  body: "Comment text"
+  body: "🤖 Comment text\n\n---\n[Comment by AI Assistant]"
+```
+
+### Comment Attribution Format
+
+All AI-generated comments must follow this format:
+1. Start with 🤖 emoji to visually flag AI-generated content
+2. End with a signature block after a horizontal rule
+
+Example:
+```
+🤖 [Comment content here]
+
+---
+[Comment by AI Assistant]
 ```
 
 ### Approving a PR
@@ -162,7 +178,7 @@ mcp__github__create_pull_request_review:
   repo: [repository-name]
   pullNumber: [PR-number]
   event: "APPROVE"
-  body: "Approval comment"
+  body: "🤖 Approval comment\n\n---\n[Comment by AI Assistant]"
 ```
 
 ## Important Notes
