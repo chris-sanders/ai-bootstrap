@@ -38,14 +38,48 @@ if [ "$VERBOSE" = true ]; then
   echo "Output file: $OUTPUT_FILE"
 fi
 
-# Create a temporary working file
-TEMP_OUTPUT=$(mktemp)
+# Create output directory if it doesn't exist
+mkdir -p "$(dirname "$OUTPUT_FILE")"
 
-# Add script header
-cat > "$TEMP_OUTPUT" << EOF
+# Function to safely process template content
+process_template() {
+  local template_file="$1"
+  local output_var="$2"
+  
+  # Read the template file and escape any problematic characters
+  local content
+  content=$(cat "$template_file" | sed 's/\$/\\$/g')
+  
+  # Update the output variable
+  eval "$output_var=\"\$content\""
+}
+
+# Read template files into variables
+README_BASE=""
+README_GITHUB=""
+GITHUB_MCP_GUIDE=""
+GIT_COMMIT_GUIDELINES=""
+TASK_TEMPLATE=""
+COMPONENT_DOC=""
+ARCHITECTURE=""
+ADR_TEMPLATE=""
+EXAMPLE_TASK=""
+
+process_template "${TEMPLATES_DIR}/base/ai-readme-base.md" "README_BASE"
+process_template "${TEMPLATES_DIR}/features/github-mcp/ai-readme-github-extension.md" "README_GITHUB"
+process_template "${TEMPLATES_DIR}/features/github-mcp/github-mcp-guide.md" "GITHUB_MCP_GUIDE"
+process_template "${TEMPLATES_DIR}/base/git-commit-guidelines.md" "GIT_COMMIT_GUIDELINES"
+process_template "${TEMPLATES_DIR}/base/task-template.md" "TASK_TEMPLATE"
+process_template "${TEMPLATES_DIR}/base/component-doc.md" "COMPONENT_DOC"
+process_template "${TEMPLATES_DIR}/base/architecture.md" "ARCHITECTURE"
+process_template "${TEMPLATES_DIR}/features/adr/adr-template.md" "ADR_TEMPLATE"
+process_template "${TEMPLATES_DIR}/base/example-task.md" "EXAMPLE_TASK"
+
+# Create the bootstrap script
+cat > "$OUTPUT_FILE" << EOL
 #!/bin/bash
-# Version: ${VERSION}
-# Generated: ${TIMESTAMP}
+# Version: $VERSION
+# Generated: $TIMESTAMP
 # AI Agent Development Workflow Bootstrap Script
 # This script sets up the agentic workflow structure in your project
 # Usage: ./agentic-bootstrap.sh [options] [project_directory]
@@ -87,36 +121,15 @@ AGENTIC_DIR="\$PROJECT_DIR/docs/agentic"
 TASKS_DIR="\$PROJECT_DIR/tasks"
 DOCS_DIR="\$PROJECT_DIR/docs"
 
-# Helper function to create files idempotently
-create_file() {
+# Helper function to check if file exists and should be created
+should_create_file() {
   local file_path="\$1"
-  local content_file="\$2"
   
-  # Create directories if they don't exist
-  mkdir -p "\$(dirname "\$file_path")"
-  
-  # Only create/overwrite the file if it doesn't exist or force is enabled
   if [ ! -f "\$file_path" ] || [ "\$FORCE" = true ]; then
-    cat "\$content_file" > "\$file_path"
-    echo "Created: \$file_path"
+    return 0  # True - should create
   else
-    echo "Skipped: \$file_path (already exists, use --force to overwrite)"
+    return 1  # False - should skip
   fi
-}
-
-# Function to create a file with content from a heredoc
-create_file_with_content() {
-  local file_path="\$1"
-  local temp_file=\$(mktemp)
-  
-  # Write stdin content to temp file
-  cat > "\$temp_file"
-  
-  # Create the actual file
-  create_file "\$file_path" "\$temp_file"
-  
-  # Clean up temp file
-  rm "\$temp_file"
 }
 
 echo "Setting up AI Agent Development Workflow in \$PROJECT_DIR"
@@ -138,135 +151,124 @@ if [ "\$INCLUDE_GITHUB_MCP" = true ]; then
 else
   echo "GitHub MCP workflow integration disabled"
 fi
-EOF
 
-# 1. AI readme (conditional based on GitHub MCP)
-cat >> "$TEMP_OUTPUT" << 'SCRIPT'
-
-# AI readme file
-if [ "$INCLUDE_GITHUB_MCP" = true ]; then
-  # AI readme with GitHub MCP integration
-  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
-SCRIPT
-
-# Append template content for AI readme
-cat "${TEMPLATES_DIR}/base/ai-readme-base.md" >> "$TEMP_OUTPUT"
-cat "${TEMPLATES_DIR}/features/github-mcp/ai-readme-github-extension.md" >> "$TEMP_OUTPUT"
-
-# Close heredoc and add GitHub MCP guide
-cat >> "$TEMP_OUTPUT" << 'SCRIPT'
-EOF
-
-  # GitHub MCP guide file
-  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/github-mcp-guide.md"
-SCRIPT
-
-# Append GitHub MCP guide content
-cat "${TEMPLATES_DIR}/features/github-mcp/github-mcp-guide.md" >> "$TEMP_OUTPUT"
-
-# Close heredoc and add else case
-cat >> "$TEMP_OUTPUT" << 'SCRIPT'
-EOF
+# Create AI readme file based on GitHub MCP flag
+if [ "\$INCLUDE_GITHUB_MCP" = true ]; then
+  # Create AI readme with GitHub MCP content
+  README_PATH="\$AGENTIC_DIR/ai-readme.md"
+  if should_create_file "\$README_PATH"; then
+    cat > "\$README_PATH" << 'ENDOFFILE'
+$README_BASE
+$README_GITHUB
+ENDOFFILE
+    echo "Created: \$README_PATH"
+  else
+    echo "Skipped: \$README_PATH (already exists, use --force to overwrite)"
+  fi
+  
+  # Create GitHub MCP guide
+  MCP_GUIDE_PATH="\$AGENTIC_DIR/github-mcp-guide.md"
+  if should_create_file "\$MCP_GUIDE_PATH"; then
+    cat > "\$MCP_GUIDE_PATH" << 'ENDOFFILE'
+$GITHUB_MCP_GUIDE
+ENDOFFILE
+    echo "Created: \$MCP_GUIDE_PATH"
+  else
+    echo "Skipped: \$MCP_GUIDE_PATH (already exists, use --force to overwrite)"
+  fi
 else
-  # AI readme without GitHub MCP integration
-  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
-SCRIPT
-
-# Append non-GitHub content
-cat "${TEMPLATES_DIR}/base/ai-readme-base.md" >> "$TEMP_OUTPUT"
-cat "${TEMPLATES_DIR}/base/git-commit-guidelines.md" >> "$TEMP_OUTPUT"
-
-# Close heredoc and if statement
-cat >> "$TEMP_OUTPUT" << 'SCRIPT'
-EOF
+  # Create AI readme without GitHub MCP content
+  README_PATH="\$AGENTIC_DIR/ai-readme.md"
+  if should_create_file "\$README_PATH"; then
+    cat > "\$README_PATH" << 'ENDOFFILE'
+$README_BASE
+$GIT_COMMIT_GUIDELINES
+ENDOFFILE
+    echo "Created: \$README_PATH"
+  else
+    echo "Skipped: \$README_PATH (already exists, use --force to overwrite)"
+  fi
 fi
 
-# Task template
-cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/task-template.md"
-SCRIPT
+# Create task template
+TASK_TEMPLATE_PATH="\$AGENTIC_DIR/templates/task-template.md"
+if should_create_file "\$TASK_TEMPLATE_PATH"; then
+  cat > "\$TASK_TEMPLATE_PATH" << 'ENDOFFILE'
+$TASK_TEMPLATE
+ENDOFFILE
+  echo "Created: \$TASK_TEMPLATE_PATH"
+else
+  echo "Skipped: \$TASK_TEMPLATE_PATH (already exists, use --force to overwrite)"
+fi
 
-# Append task template content
-cat "${TEMPLATES_DIR}/base/task-template.md" >> "$TEMP_OUTPUT"
+# Create component documentation template
+COMPONENT_DOC_PATH="\$AGENTIC_DIR/templates/component-doc.md"
+if should_create_file "\$COMPONENT_DOC_PATH"; then
+  cat > "\$COMPONENT_DOC_PATH" << 'ENDOFFILE'
+$COMPONENT_DOC
+ENDOFFILE
+  echo "Created: \$COMPONENT_DOC_PATH"
+else
+  echo "Skipped: \$COMPONENT_DOC_PATH (already exists, use --force to overwrite)"
+fi
 
-# Close heredoc
-cat >> "$TEMP_OUTPUT" << 'SCRIPT'
-EOF
-
-# Component documentation template
-cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/component-doc.md"
-SCRIPT
-
-# Append component doc template content
-cat "${TEMPLATES_DIR}/base/component-doc.md" >> "$TEMP_OUTPUT"
-
-# Close heredoc
-cat >> "$TEMP_OUTPUT" << 'SCRIPT'
-EOF
-
-# Architecture document
-cat << 'EOF' | create_file_with_content "$DOCS_DIR/architecture.md"
-SCRIPT
-
-# Append architecture content
-cat "${TEMPLATES_DIR}/base/architecture.md" >> "$TEMP_OUTPUT"
-
-# Close heredoc and add ADR conditional
-cat >> "$TEMP_OUTPUT" << 'SCRIPT'
-EOF
+# Create architecture document
+ARCHITECTURE_PATH="\$DOCS_DIR/architecture.md"
+if should_create_file "\$ARCHITECTURE_PATH"; then
+  cat > "\$ARCHITECTURE_PATH" << 'ENDOFFILE'
+$ARCHITECTURE
+ENDOFFILE
+  echo "Created: \$ARCHITECTURE_PATH"
+else
+  echo "Skipped: \$ARCHITECTURE_PATH (already exists, use --force to overwrite)"
+fi
 
 # Create ADR template if enabled
-if [ "$INCLUDE_ADR" = true ]; then
-  cat << 'EOF' | create_file_with_content "$DOCS_DIR/decisions/ADR-template.md"
-SCRIPT
-
-# Append ADR template content
-cat "${TEMPLATES_DIR}/features/adr/adr-template.md" >> "$TEMP_OUTPUT"
-
-# Close heredoc and if statement
-cat >> "$TEMP_OUTPUT" << 'SCRIPT'
-EOF
+if [ "\$INCLUDE_ADR" = true ]; then
+  ADR_TEMPLATE_PATH="\$DOCS_DIR/decisions/ADR-template.md"
+  if should_create_file "\$ADR_TEMPLATE_PATH"; then
+    cat > "\$ADR_TEMPLATE_PATH" << 'ENDOFFILE'
+$ADR_TEMPLATE
+ENDOFFILE
+    echo "Created: \$ADR_TEMPLATE_PATH"
+  else
+    echo "Skipped: \$ADR_TEMPLATE_PATH (already exists, use --force to overwrite)"
+  fi
 fi
 
-# Example task
-cat << 'EOF' | create_file_with_content "$TASKS_DIR/backlog/TASK-001-example.md"
-SCRIPT
-
-# Append example task content
-cat "${TEMPLATES_DIR}/base/example-task.md" >> "$TEMP_OUTPUT"
-
-# Close heredoc and add final script section
-cat >> "$TEMP_OUTPUT" << 'SCRIPT'
-EOF
+# Create a sample task
+EXAMPLE_TASK_PATH="\$TASKS_DIR/backlog/TASK-001-example.md"
+if should_create_file "\$EXAMPLE_TASK_PATH"; then
+  cat > "\$EXAMPLE_TASK_PATH" << 'ENDOFFILE'
+$EXAMPLE_TASK
+ENDOFFILE
+  echo "Created: \$EXAMPLE_TASK_PATH"
+else
+  echo "Skipped: \$EXAMPLE_TASK_PATH (already exists, use --force to overwrite)"
+fi
 
 echo "Workflow initialized successfully!"
 echo ""
 echo "Next steps:"
-echo "1. Customize the architecture documentation in $DOCS_DIR/architecture.md"
-echo "2. Review the sample task in $TASKS_DIR/backlog/TASK-001-example.md"
-echo "3. Create additional tasks using the template in $AGENTIC_DIR/templates/task-template.md"
+echo "1. Customize the architecture documentation in \$DOCS_DIR/architecture.md"
+echo "2. Review the sample task in \$TASKS_DIR/backlog/TASK-001-example.md"
+echo "3. Create additional tasks using the template in \$AGENTIC_DIR/templates/task-template.md"
 echo ""
-if [ "$INCLUDE_ADR" = true ]; then
-  echo "4. Create ADRs in $DOCS_DIR/decisions/ to document architecture decisions"
+if [ "\$INCLUDE_ADR" = true ]; then
+  echo "4. Create ADRs in \$DOCS_DIR/decisions/ to document architecture decisions"
   echo ""
 fi
 echo "To start working with an AI agent:"
 echo "1. Move tasks from backlog to ready when they're fully defined and ready for implementation"
 echo "2. Point the AI agent to your project repository"
-echo "3. Instruct it to read $AGENTIC_DIR/ai-readme.md first"
+echo "3. Instruct it to read \$AGENTIC_DIR/ai-readme.md first"
 echo "4. The agent will find tasks in the ready folder and begin working"
 echo ""
 echo "Script options:"
 echo "- To include Architecture Decision Records: --with-adr"
 echo "- To disable GitHub MCP workflow integration (enabled by default): --without-github-mcp"
 echo "- To force overwrite of existing files: --force"
-SCRIPT
-
-# Create output directory if it doesn't exist
-mkdir -p "$(dirname "$OUTPUT_FILE")"
-
-# Move the temporary file to the final location
-cp "$TEMP_OUTPUT" "$OUTPUT_FILE"
-rm "$TEMP_OUTPUT"
+EOL
 
 # Make the output file executable
 chmod +x "$OUTPUT_FILE"

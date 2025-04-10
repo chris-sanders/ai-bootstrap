@@ -1,6 +1,6 @@
 #!/bin/bash
 # Version: 1.0.0
-# Generated: 2025-04-10 23:29:37 UTC
+# Generated: 2025-04-10 23:53:17 UTC
 # AI Agent Development Workflow Bootstrap Script
 # This script sets up the agentic workflow structure in your project
 # Usage: ./agentic-bootstrap.sh [options] [project_directory]
@@ -42,36 +42,15 @@ AGENTIC_DIR="$PROJECT_DIR/docs/agentic"
 TASKS_DIR="$PROJECT_DIR/tasks"
 DOCS_DIR="$PROJECT_DIR/docs"
 
-# Helper function to create files idempotently
-create_file() {
+# Helper function to check if file exists and should be created
+should_create_file() {
   local file_path="$1"
-  local content_file="$2"
   
-  # Create directories if they don't exist
-  mkdir -p "$(dirname "$file_path")"
-  
-  # Only create/overwrite the file if it doesn't exist or force is enabled
   if [ ! -f "$file_path" ] || [ "$FORCE" = true ]; then
-    cat "$content_file" > "$file_path"
-    echo "Created: $file_path"
+    return 0  # True - should create
   else
-    echo "Skipped: $file_path (already exists, use --force to overwrite)"
+    return 1  # False - should skip
   fi
-}
-
-# Function to create a file with content from a heredoc
-create_file_with_content() {
-  local file_path="$1"
-  local temp_file=$(mktemp)
-  
-  # Write stdin content to temp file
-  cat > "$temp_file"
-  
-  # Create the actual file
-  create_file "$file_path" "$temp_file"
-  
-  # Clean up temp file
-  rm "$temp_file"
 }
 
 echo "Setting up AI Agent Development Workflow in $PROJECT_DIR"
@@ -94,10 +73,12 @@ else
   echo "GitHub MCP workflow integration disabled"
 fi
 
-# AI readme file
+# Create AI readme file based on GitHub MCP flag
 if [ "$INCLUDE_GITHUB_MCP" = true ]; then
-  # AI readme with GitHub MCP integration
-  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
+  # Create AI readme with GitHub MCP content
+  README_PATH="$AGENTIC_DIR/ai-readme.md"
+  if should_create_file "$README_PATH"; then
+    cat > "$README_PATH" << 'ENDOFFILE'
 # AI Agent Instructions
 
 This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
@@ -196,6 +177,7 @@ When reporting progress or completion:
 5. Suggest improvements to the workflow if applicable
 
 Remember to keep documentation up-to-date as you work, especially in the `/docs/` directory which helps maintain project knowledge.
+
 ## Git/GitHub Operations
 
 When working with Git and GitHub:
@@ -226,10 +208,17 @@ When working with Git and GitHub:
    - Only move task to completed folder after PR is merged
    - Include final PR status and merge date in the task file
 
-For detailed guidance on GitHub operations using MCP tools, see `/docs/agentic/github-mcp-guide.md`.EOF
-
-  # GitHub MCP guide file
-  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/github-mcp-guide.md"
+For detailed guidance on GitHub operations using MCP tools, see `/docs/agentic/github-mcp-guide.md`.
+ENDOFFILE
+    echo "Created: $README_PATH"
+  else
+    echo "Skipped: $README_PATH (already exists, use --force to overwrite)"
+  fi
+  
+  # Create GitHub MCP guide
+  MCP_GUIDE_PATH="$AGENTIC_DIR/github-mcp-guide.md"
+  if should_create_file "$MCP_GUIDE_PATH"; then
+    cat > "$MCP_GUIDE_PATH" << 'ENDOFFILE'
 # GitHub MCP Operations Guide
 
 This document provides guidance on how to use GitHub MCP (Model Capability Provider) tools for Git and GitHub operations as part of the AI workflow.
@@ -420,10 +409,17 @@ mcp__github__create_pull_request_review:
 - When the GitHub workflow is enabled, creating PRs is a standard part of task completion
 - Task workflow: backlog → ready → started → review → completed
 - Tasks move from "started" to "review" folder when PR is created
-- Tasks move from "review" to "completed" after PR is mergedEOF
+- Tasks move from "review" to "completed" after PR is merged
+ENDOFFILE
+    echo "Created: $MCP_GUIDE_PATH"
+  else
+    echo "Skipped: $MCP_GUIDE_PATH (already exists, use --force to overwrite)"
+  fi
 else
-  # AI readme without GitHub MCP integration
-  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
+  # Create AI readme without GitHub MCP content
+  README_PATH="$AGENTIC_DIR/ai-readme.md"
+  if should_create_file "$README_PATH"; then
+    cat > "$README_PATH" << 'ENDOFFILE'
 # AI Agent Instructions
 
 This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
@@ -522,6 +518,7 @@ When reporting progress or completion:
 5. Suggest improvements to the workflow if applicable
 
 Remember to keep documentation up-to-date as you work, especially in the `/docs/` directory which helps maintain project knowledge.
+
 ## Git Commit Guidelines
 
 When committing changes:
@@ -530,11 +527,18 @@ When committing changes:
 2. Never include AI attribution in commit messages (no "Created by Claude" or similar)
 3. Follow the project's commit message format
 4. Include only relevant files in your commits
-5. Make atomic commits that address a single concernEOF
+5. Make atomic commits that address a single concern
+ENDOFFILE
+    echo "Created: $README_PATH"
+  else
+    echo "Skipped: $README_PATH (already exists, use --force to overwrite)"
+  fi
 fi
 
-# Task template
-cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/task-template.md"
+# Create task template
+TASK_TEMPLATE_PATH="$AGENTIC_DIR/templates/task-template.md"
+if should_create_file "$TASK_TEMPLATE_PATH"; then
+  cat > "$TASK_TEMPLATE_PATH" << 'ENDOFFILE'
 # Task: [Task Title]
 
 ## Objective
@@ -570,10 +574,17 @@ cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/task-template.md
 [Any additional information]
 
 ## Progress Updates
-(To be filled by AI during implementation)EOF
+(To be filled by AI during implementation)
+ENDOFFILE
+  echo "Created: $TASK_TEMPLATE_PATH"
+else
+  echo "Skipped: $TASK_TEMPLATE_PATH (already exists, use --force to overwrite)"
+fi
 
-# Component documentation template
-cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/component-doc.md"
+# Create component documentation template
+COMPONENT_DOC_PATH="$AGENTIC_DIR/templates/component-doc.md"
+if should_create_file "$COMPONENT_DOC_PATH"; then
+  cat > "$COMPONENT_DOC_PATH" << 'ENDOFFILE'
 # Component: [Component Name]
 
 ## Purpose
@@ -597,10 +608,17 @@ cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/component-doc.md
 - [Design decision 2]
 
 ## Examples
-[Usage examples]EOF
+[Usage examples]
+ENDOFFILE
+  echo "Created: $COMPONENT_DOC_PATH"
+else
+  echo "Skipped: $COMPONENT_DOC_PATH (already exists, use --force to overwrite)"
+fi
 
-# Architecture document
-cat << 'EOF' | create_file_with_content "$DOCS_DIR/architecture.md"
+# Create architecture document
+ARCHITECTURE_PATH="$DOCS_DIR/architecture.md"
+if should_create_file "$ARCHITECTURE_PATH"; then
+  cat > "$ARCHITECTURE_PATH" << 'ENDOFFILE'
 # System Architecture
 
 This document describes the overall system architecture.
@@ -618,11 +636,18 @@ This document describes the overall system architecture.
 [How the system is deployed]
 
 ## Technologies
-[Key technologies used]EOF
+[Key technologies used]
+ENDOFFILE
+  echo "Created: $ARCHITECTURE_PATH"
+else
+  echo "Skipped: $ARCHITECTURE_PATH (already exists, use --force to overwrite)"
+fi
 
 # Create ADR template if enabled
 if [ "$INCLUDE_ADR" = true ]; then
-  cat << 'EOF' | create_file_with_content "$DOCS_DIR/decisions/ADR-template.md"
+  ADR_TEMPLATE_PATH="$DOCS_DIR/decisions/ADR-template.md"
+  if should_create_file "$ADR_TEMPLATE_PATH"; then
+    cat > "$ADR_TEMPLATE_PATH" << 'ENDOFFILE'
 # Decision Record: [Title]
 
 ## Status
@@ -642,11 +667,18 @@ if [ "$INCLUDE_ADR" = true ]; then
 [List negative consequences]
 
 ## Implementation
-[Describe implementation details if applicable]EOF
+[Describe implementation details if applicable]
+ENDOFFILE
+    echo "Created: $ADR_TEMPLATE_PATH"
+  else
+    echo "Skipped: $ADR_TEMPLATE_PATH (already exists, use --force to overwrite)"
+  fi
 fi
 
-# Example task
-cat << 'EOF' | create_file_with_content "$TASKS_DIR/backlog/TASK-001-example.md"
+# Create a sample task
+EXAMPLE_TASK_PATH="$TASKS_DIR/backlog/TASK-001-example.md"
+if should_create_file "$EXAMPLE_TASK_PATH"; then
+  cat > "$EXAMPLE_TASK_PATH" << 'ENDOFFILE'
 # Task: Example Task
 
 ## Objective
@@ -682,7 +714,12 @@ None
 This is just an example task to get started.
 
 ## Progress Updates
-(To be filled by AI during implementation)EOF
+(To be filled by AI during implementation)
+ENDOFFILE
+  echo "Created: $EXAMPLE_TASK_PATH"
+else
+  echo "Skipped: $EXAMPLE_TASK_PATH (already exists, use --force to overwrite)"
+fi
 
 echo "Workflow initialized successfully!"
 echo ""
