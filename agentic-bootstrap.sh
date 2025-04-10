@@ -76,7 +76,7 @@ echo "Setting up AI Agent Development Workflow in $PROJECT_DIR"
 
 # Create directory structure
 mkdir -p "$AGENTIC_DIR/templates"
-mkdir -p "$TASKS_DIR/backlog" "$TASKS_DIR/ready" "$TASKS_DIR/started" "$TASKS_DIR/completed"
+mkdir -p "$TASKS_DIR/backlog" "$TASKS_DIR/ready" "$TASKS_DIR/started" "$TASKS_DIR/review" "$TASKS_DIR/completed"
 mkdir -p "$DOCS_DIR/components"
 
 # Create decisions directory only if ADR is enabled

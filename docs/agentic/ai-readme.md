@@ -7,7 +7,8 @@ This document provides guidance on how to work within this project's development
 As an AI agent, you should:
 
 1. **Find tasks to work on**:
-   - Look in `/tasks/ready/` for tasks to work on
+   - Look in `/tasks/ready/` for new tasks to implement
+   - Check in `/tasks/review/` for tasks needing PR feedback responses
    - Check dependencies to ensure they are completed
 
 2. **Start working on a task**:
@@ -37,25 +38,26 @@ As an AI agent, you should:
      - Use the task name as the PR title
      - Include summary of changes and test plan in the PR body
    - Update the task's metadata:
+     - Change `**Status**: started` to `**Status**: review`
      - Add `**PR**: #[PR-number]` 
      - Add `**PR URL**: [PR-URL]`
      - Add `**PR Status**: Open`
    - Add a progress note with PR creation details
-   - Keep the task in the `/tasks/started/` folder while PR is under review
+   - Move the task file from `/tasks/started/` to `/tasks/review/` folder
 
 5. **Handle PR Feedback**:
    - Make requested changes to address PR feedback
    - Commit changes with descriptive messages
    - Update the task progress with details of changes
-   - Keep the task in the `/tasks/started/` folder until PR is merged
+   - Keep the task in the `/tasks/review/` folder until PR is merged
 
 6. **Complete a task** (after PR is merged):
    - Update the task's metadata:
-     - Change `**Status**: started` to `**Status**: completed`
+     - Change `**Status**: review` to `**Status**: completed`
      - Add `**Completed**: YYYY-MM-DD` with today's date
      - Update `**PR Status**: Merged`
    - Document evidence of completion
-   - Move the task file from `/tasks/started/` to `/tasks/completed/`
+   - Move the task file from `/tasks/review/` to `/tasks/completed/`
    - Update relevant documentation in `/docs/` if necessary
 
 7. **Report completion**:

@@ -1,6 +1,6 @@
 # Task: GitHub MCP Integration Implementation
 
-**Status**: started
+**Status**: review
 **Started**: 2025-04-10
 **Branch**: task/github-mcp-integration
 **PR**: #1
@@ -109,7 +109,7 @@ None
 - This task only configures workflow instructions for GitHub MCP, it does not configure the Claude Code MCP server itself, as that's handled at the user level.
 - The flag follows the same convention as the existing `--with-adr` flag, but inverse logic as it disables a feature that's on by default.
 - For Phase 4 (Future Work), a placeholder task for GitHub issues integration should be created in `/tasks/backlog/` after this task is completed, but is not part of this immediate implementation.
-- Task status flow: Tasks stay in "started" folder until PR is merged, even after implementation is complete. This ensures AI agents can find and continue work on tasks with open PRs by looking in the "started" folder.
+- Task status flow: Tasks move from "started" to "review" folder when PR is created, then to "completed" folder after PR is merged. This creates a clear separation between implementation and review phases.
 
 ## Progress Updates
 2025-04-10: Started working on the task. Created branch `task/github-mcp-integration` and moved task to started folder.
@@ -122,3 +122,4 @@ None
 2025-04-10: Added explicit guidance about using existing test scripts rather than manual testing.
 2025-04-10: Created PR #1 for the task using MCP tools as documented in the guide.
 2025-04-10: Received PR feedback about including detailed information in the PR description. Updated PR description to include files modified, changes made, and important notes.
+2025-04-10: Received PR feedback to enhance the workflow with a "review" stage. Created tasks/review folder and moved task from "started" to "review" folder to reflect its current status awaiting PR review.

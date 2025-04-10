@@ -1,0 +1,1877 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+<additional_info>
+
+</additional_info>
+
+</file_summary>
+
+<directory_structure>
+docs/
+  agentic/
+    templates/
+      component-doc.md
+      task-template.md
+    ai-readme.md
+    github-mcp-guide.md
+  components/
+    bootstrap-script.md
+    test-bootstrap-script.md
+  architecture.md
+tasks/
+  backlog/
+    github-issues-integration.md
+  completed/
+    idempotent.md
+  started/
+    github-mcp-integration.md
+agentic-bootstrap.sh
+CLAUDE.md
+README.md
+test_bootstrap.sh
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="docs/agentic/templates/component-doc.md">
+# Component: [Component Name]
+
+## Purpose
+[Brief description of the component's purpose]
+
+## Responsibilities
+- [Responsibility 1]
+- [Responsibility 2]
+- [etc.]
+
+## Interfaces
+- **Input**: [What data/signals the component receives]
+- **Output**: [What data/signals the component produces]
+
+## Dependencies
+- [Dependency 1]
+- [Dependency 2]
+
+## Design Decisions
+- [Design decision 1]
+- [Design decision 2]
+
+## Examples
+[Usage examples]
+</file>
+
+<file path="docs/agentic/templates/task-template.md">
+# Task: [Task Title]
+
+
+## Objective
+[Clear, measurable objective of this task]
+
+## Context
+[Relevant background information and links to related resources]
+
+## Success Criteria
+- [ ] [Specific, testable outcome 1]
+- [ ] [Specific, testable outcome 2]
+- [ ] [etc.]
+
+## Dependencies
+[Any prerequisite tasks or components]
+
+## Implementation Plan
+1. [Step 1]
+2. [Step 2]
+3. [etc.]
+
+## Validation Plan
+- [Test 1 description]
+- [Test 2 description]
+
+## Evidence of Completion
+(To be filled by AI)
+- [ ] Command output or logs demonstrating completion
+- [ ] Path to created/modified files
+- [ ] Summary of changes made
+
+## Notes
+[Any additional information]
+
+## Progress Updates
+(To be filled by AI during implementation)
+</file>
+
+<file path="docs/agentic/github-mcp-guide.md">
+# GitHub MCP Operations Guide
+
+This document provides guidance on how to use GitHub MCP (Model Capability Provider) tools for Git and GitHub operations as part of the AI workflow.
+
+## Prerequisites
+
+- Claude Code must be configured with GitHub MCP access at the user level
+- The repository must be a valid git repository
+
+## Branch Management
+
+### Creating a New Branch
+
+When starting a task, create a branch using the following naming convention:
+
+```
+task/[task-filename-without-extension]
+```
+
+Example for a task file named `feature-implementation.md`:
+
+```
+git checkout -b task/feature-implementation
+```
+
+### Working with Branches
+
+Basic branch operations:
+
+```bash
+# Check current branch
+git branch
+
+# Switch to another branch
+git checkout [branch-name]
+
+# Create and switch to a new branch
+git checkout -b [branch-name]
+```
+
+## Making Changes
+
+### Staging Changes
+
+```bash
+# Stage specific files
+git add [file-path]
+
+# Stage all changes
+git add .
+
+# Check what's staged
+git status
+```
+
+### Committing Changes
+
+```bash
+# Commit staged changes with a message
+git commit -m "Descriptive message about changes"
+
+# Commit all tracked files with a message
+git commit -am "Descriptive message about changes"
+```
+
+### Good Commit Messages
+
+- Be descriptive but concise
+- Focus on "why" rather than "what" when possible
+- Start with a verb in present tense (e.g., "Add", "Fix", "Update")
+- Do not include AI attribution (no "Created by Claude" or similar)
+
+## Pull Requests
+
+### Creating a Pull Request
+
+After pushing your branch, create a pull request using the MCP tools:
+
+```
+# Format
+mcp__github__create_pull_request:
+  owner: [repository-owner]
+  repo: [repository-name]
+  title: "Implement [task-name]"
+  head: [branch-name]
+  base: master
+  body: "PR description with summary and test plan"
+```
+
+### PR Description Template
+
+```
+## Summary
+- Brief summary of changes
+- Purpose of the changes
+
+## Test Plan
+- Steps to test the changes
+- Expected results
+```
+
+### Updating Task with PR Information
+
+After creating a PR, update the task file with:
+
+```
+**PR**: #[PR-number]
+**PR URL**: [PR-URL]
+**PR Status**: Open
+```
+
+### Handling PR Feedback
+
+When receiving PR feedback:
+
+1. Make requested changes
+2. Commit with a descriptive message
+3. Update the task progress section with:
+   ```
+   [Date]: Updated PR with requested changes: [summary of changes]
+   ```
+
+## Merging Process
+
+When a PR is approved and ready to merge:
+
+```
+# Format
+mcp__github__merge_pull_request:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  merge_method: "squash"  # or "merge" or "rebase"
+```
+
+After merging:
+1. Update the task file with `**PR Status**: Merged`
+2. Move the task from `started` to `completed` folder
+3. Update the task status to `completed` with completion date
+
+## Review Workflows
+
+### Adding PR Comments
+
+```
+# Format
+mcp__github__create_pull_request_review:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  event: "COMMENT"  # or "APPROVE" or "REQUEST_CHANGES"
+  body: "Comment text"
+```
+
+### Approving a PR
+
+```
+# Format
+mcp__github__create_pull_request_review:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  event: "APPROVE"
+  body: "Approval comment"
+```
+
+## Important Notes
+
+- MCP tool configuration is handled at the user level in Claude Code, not at the project level
+- This guide only covers workflow instructions for GitHub operations
+- When the GitHub workflow is enabled, creating PRs is a standard part of task completion
+- Tasks remain in the "started" folder while PRs are under review
+- Tasks only move to "completed" after PR is merged
+</file>
+
+<file path="tasks/backlog/github-issues-integration.md">
+# Task: GitHub Issues MCP Integration
+
+**Status**: backlog
+
+## Objective
+Extend the AI Bootstrap GitHub integration to support GitHub Issues operations via MCP, enabling AI agents to create, update, and track issues as part of the workflow.
+
+## Context
+Following the implementation of GitHub MCP integration for PR workflows, this task aims to further enhance the GitHub integration by adding support for GitHub Issues operations. This would enable a complete GitHub workflow from issue creation to PR submission.
+
+## Success Criteria
+- [ ] Documentation updated with GitHub Issues MCP operations
+- [ ] AI workflow extended to include issue creation and management
+- [ ] Bootstrap script enhanced to support GitHub Issues integration
+- [ ] Test task created to validate GitHub Issues integration
+- [ ] Validation tests passed showing successful GitHub Issues operations
+
+## Dependencies
+- GitHub MCP Integration Implementation task
+
+## Implementation Plan
+1. Update GitHub MCP operations guide:
+   - Extend `/docs/agentic/github-mcp-guide.md` with GitHub Issues command formats
+   - Include command templates for creating issues, updating issues, and adding comments
+
+2. Update AI agent instructions:
+   - Extend GitHub operations section with issue management guidelines
+   - Define when and how to create issues for new feature requests or bugs
+   - Document how to link PRs to issues using GitHub references
+
+3. Update task metadata format:
+   - Add fields for tracking issue numbers and linking to related PRs
+   - Update progress updates section to include issue status transitions
+
+4. Enhance bootstrap script:
+   - Update `--with-github-mcp` flag to include issues support
+   - Add options for customizing issue templates and labels
+
+## Validation Plan
+- Test GitHub Issues integration:
+  - Verify issue creation with proper formatting
+  - Verify issue updates and comments
+  - Verify linking between issues and PRs
+  - Verify task file updates with issue information
+
+## Evidence of Completion
+(To be filled by AI)
+- [ ] Command output or logs demonstrating completion
+- [ ] Path to created/modified files
+- [ ] Summary of changes made
+
+## Notes
+This task is currently in the backlog as it depends on the successful implementation of the core GitHub MCP integration. There are potential concerns about scope and model capacity to handle complex GitHub workflows that should be evaluated after the initial GitHub integration is complete.
+
+## Progress Updates
+(To be filled by AI during implementation)
+</file>
+
+<file path="docs/architecture.md">
+# System Architecture
+
+This document describes the overall system architecture of the AI Bootstrap workflow.
+
+## Overview
+The AI Bootstrap project defines a minimalist but functional workflow for managing AI agent tasks within software projects. It provides a standardized directory structure, documentation templates, and process guidelines to make AI agent contributions more effective and easier to manage.
+
+## Components
+
+### Directory Structure
+- `/docs/agentic/`: Contains configuration and instructions for AI agents
+  - `templates/`: Reusable templates for tasks and documentation
+  - `ai-readme.md`: Instructions for AI agents on how to work within the project
+- `tasks/`: Contains task descriptions organized by status
+  - `backlog/`: Tasks identified but not yet ready for implementation
+  - `ready/`: Tasks that are ready to be worked on
+  - `started/`: Tasks currently in progress
+  - `completed/`: Tasks that have been completed
+- `docs/`: Project documentation
+  - `components/`: Documentation for individual components
+  - `decisions/`: Record of architectural decisions
+  - `architecture.md`: This document
+
+### Bootstrap Script
+The `agentic-bootstrap.sh` script initializes the directory structure and creates template files in a target project. It is designed to be run once to set up the workflow.
+
+### Workflow Process
+The workflow follows a simple task lifecycle:
+1. Tasks are created and placed in the backlog
+2. Tasks are moved to ready when they are well-defined and ready to be worked on
+3. AI agents pick up tasks from ready, move them to started, and update their status
+4. When complete, tasks are moved to the completed directory with evidence of completion
+
+## Data Flow
+1. Humans create tasks and place them in the appropriate directory
+2. AI agents read tasks from the ready directory
+3. AI agents update task status and provide progress notes
+4. AI agents move completed tasks to the completed directory
+5. All participants maintain documentation to reflect the current state of the project
+
+## Deployment Model
+This workflow is designed to be embedded within any software project. The bootstrap script sets up the necessary structure without modifying the existing project organization.
+
+## Technologies
+- Bash (bootstrap script)
+- Markdown (documentation and task definitions)
+- Git (version control)
+</file>
+
+<file path="docs/components/test-bootstrap-script.md">
+# Component: Test Bootstrap Script (test_bootstrap.sh)
+
+## Purpose
+The test bootstrap script validates the idempotent behavior of the agentic-bootstrap.sh script. It ensures that the bootstrap script correctly handles existing files, recreates missing files, properly implements the --force flag, and correctly manages GitHub MCP integration.
+
+## Responsibilities
+- Verify that the bootstrap script creates all expected files when run on an empty directory
+- Validate that existing files are not modified during subsequent runs
+- Ensure deleted files are recreated when the script is run again
+- Verify that the --force flag correctly overwrites existing files
+- Test GitHub MCP integration features (enabled by default)
+- Validate --without-github-mcp flag works correctly
+- Test toggling GitHub MCP integration in existing projects
+- Provide clear pass/fail output for each test case
+
+## Interfaces
+- **Input**: Optional flag for test behavior
+  - `--no-cleanup`: Preserve test files after execution (for debugging)
+- **Output**: Test results with colored pass/fail indicators
+
+## Dependencies
+- Bash shell
+- agentic-bootstrap.sh script
+- Standard Unix utilities (grep, mkdir, echo)
+
+## Design Decisions
+- Uses a local test directory within the project (not system temp directories)
+- Automatically cleans up test files after execution unless --no-cleanup is specified
+- Employs color-coded output for better readability of test results
+- Tests each success criterion individually in a sequential manner
+- Implements early exit on failure to prevent cascading test failures
+- Creates subdirectories for testing different configurations simultaneously
+- Uses both output message checking and file content verification
+- Added specific functions for checking file existence and content patterns
+
+## Examples
+
+Basic usage:
+```bash
+./test_bootstrap.sh
+```
+
+Run without cleaning up test files:
+```bash
+./test_bootstrap.sh --no-cleanup
+```
+
+Example output:
+```
+=== TEST SUITE: BOOTSTRAP SCRIPT IDEMPOTENT BEHAVIOR ===
+
+=== Test Case 1: Initial creation in empty directory with default settings ===
+Test: Initial creation
+  Command: ./agentic-bootstrap.sh
+  ✓ PASS: Found expected output: 'Created:'
+  ✓ PASS: AI readme file created
+  ✓ PASS: GitHub MCP guide created (default)
+  ✓ PASS: AI readme contains GitHub section
+
+... (other test cases)
+
+All tests passed successfully!
+```
+</file>
+
+<file path="tasks/completed/idempotent.md">
+# Task: Idempotent bootstrap
+**Status**: completed
+**Started**: 2025-04-08
+**Completed**: 2025-04-08
+
+## Objective
+The bootstrap script should avoid damaging any existing files. Running the script shouldn't change existing files unless a force flag is provided.
+
+## Context
+The initial implementation re-running bootstrap will overwrite current files possibly causing the user loss of data.
+
+## Success Criteria
+- [x] The bootstrap script generates the expected files for an empty directory same as it does today
+- [x] Modifying files and re-running the bootstrap will not change existing files
+- [x] Removing files and re-running bootstrap will replace the missing files
+- [x] Running bootstrap with a force flag will overwrite existing files replacing their contents
+
+## Dependencies
+None
+
+## Implementation Plan
+1. Update the bootstrap script with a flag to force
+2. Check each file before creation and only overwrite files if force is active
+3. Write a simple test script that can be run to perform validation based on the Success Criteria and Validation Plan
+
+## Validation Plan
+* Think carefully to ensure testing doesn't inadvertently overwrite files in the repo, perform testing in a test folder
+- Perform each of the success criteria one at a time and confirm it works as described
+* Run the test script and ensure it properly tests the validation plan and has a clean easy to understand output with clear test cases with pass/fail
+
+## Evidence of Completion
+- [x] Command output or logs demonstrating completion: All tests pass successfully in the test script
+- [x] Path to created/modified files: 
+  - Modified agentic-bootstrap.sh to add --force flag and idempotent file creation
+  - Created test_bootstrap.sh to validate the changes
+  - Updated CLAUDE.md with guidance on directory usage
+  - Added documentation for the test script in docs/components/
+- [x] Summary of changes made:
+  1. Added --force flag to the bootstrap script
+  2. Added a helper function to check if files exist before creating
+  3. Modified file creation to skip existing files unless forced
+  4. Created a comprehensive test script that verifies all success criteria
+  5. Updated help messages to document the new --force option
+  6. Fixed test script to use local directories instead of system temp directories
+  7. Added --no-cleanup option to test script for debugging
+  8. Updated AI guidelines to prohibit using directories outside the project
+  9. Enhanced test cleanup with verification to ensure test directories are properly removed
+  10. Added absolute path resolution for test directories to prevent path-related issues
+
+## Notes
+The implementation uses a temp file approach for heredocs to avoid complex variable substitution issues.
+
+## Progress Updates
+2025-04-08: Started working on the task. Planning to implement idempotent behavior and add a --force flag.
+2025-04-08: Completed the task with implementation of --force flag, idempotent file creation logic, and test script.
+2025-04-08: Updated implementation to address issue with test script using system temp directories instead of local project directories.
+2025-04-08: Fixed test cleanup verification to ensure test directories are properly removed after testing.
+</file>
+
+<file path="CLAUDE.md">
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+This repository contains the "AI Bootstrap" project, which provides a standardized workflow for AI agents. The main components are:
+- A bootstrap script that sets up the workflow in any project
+- Documentation templates and task management structure
+- Process guidelines for AI agents
+
+## Task Management
+- Follow the workflow defined in `/docs/agentic/ai-readme.md`
+- Find tasks in `/tasks/ready/` assigned to AI agents
+- Move tasks through the workflow: backlog → ready → started → completed
+- Update task metadata when changing status (see task template for format)
+- When completing tasks, document evidence of completion
+
+## Coding Guidelines
+- Write clean, well-documented bash scripts
+- Use meaningful variable names with snake_case
+- Include comments for complex logic
+- Error handling: use `set -e` and check return values
+- Follow markdown best practices for documentation files
+- Use consistent formatting with 2-space indentation in markdown
+- IMPORTANT: Never create or use directories outside the current project without explicit permission
+- For testing, always use local directories within the project and provide cleanup mechanisms
+
+## Documentation
+- Document components in `/docs/components/`
+- Keep the architecture document up-to-date as the system evolves
+- Follow a consistent format for all markdown files
+
+## Testing
+- Test bootstrap script by running it in a test directory
+- Validate that all templates are created correctly
+- Ensure documentation is clear and consistent
+</file>
+
+<file path="docs/agentic/ai-readme.md">
+# AI Agent Instructions
+
+This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
+
+## Task Management Workflow
+
+As an AI agent, you should:
+
+1. **Find tasks to work on**:
+   - Look in `/tasks/ready/` for tasks to work on
+   - Check dependencies to ensure they are completed
+
+2. **Start working on a task**:
+   - Move the task file from `/tasks/ready/` to `/tasks/started/`
+   - Update the task's metadata:
+     - Change `**Status**: ready` to `**Status**: started` 
+     - Add `**Started**: YYYY-MM-DD` with today's date
+   - Create a branch for the task:
+     - Use naming convention: `task/[task-filename-without-extension]`
+     - Example: `git checkout -b task/feature-implementation`
+   - Add branch name to metadata: `**Branch**: task/feature-implementation`
+   - Add a progress note with the current date in the Progress Updates section
+
+3. **Work on the task**:
+   - Follow the implementation plan in the task file
+   - Update the task file with progress notes
+   - Create or modify necessary code files
+   - Run tests specified in the validation plan:
+     - Always use existing test scripts and tooling when available
+     - For script changes, run the corresponding test scripts if they exist
+     - Never create manual tests when automated tests exist
+   - Commit changes with descriptive messages
+   - Update the task progress regularly with implementation details
+
+4. **Create a Pull Request**:
+   - When implementation is complete, create a PR:
+     - Use the task name as the PR title
+     - Include summary of changes and test plan in the PR body
+   - Update the task's metadata:
+     - Add `**PR**: #[PR-number]` 
+     - Add `**PR URL**: [PR-URL]`
+     - Add `**PR Status**: Open`
+   - Add a progress note with PR creation details
+   - Keep the task in the `/tasks/started/` folder while PR is under review
+
+5. **Handle PR Feedback**:
+   - Make requested changes to address PR feedback
+   - Commit changes with descriptive messages
+   - Update the task progress with details of changes
+   - Keep the task in the `/tasks/started/` folder until PR is merged
+
+6. **Complete a task** (after PR is merged):
+   - Update the task's metadata:
+     - Change `**Status**: started` to `**Status**: completed`
+     - Add `**Completed**: YYYY-MM-DD` with today's date
+     - Update `**PR Status**: Merged`
+   - Document evidence of completion
+   - Move the task file from `/tasks/started/` to `/tasks/completed/`
+   - Update relevant documentation in `/docs/` if necessary
+
+7. **Report completion**:
+   - Summarize what was accomplished
+   - List evidence of completion
+   - Suggest next steps or related tasks
+
+## Context Understanding
+
+Before working on any task:
+
+1. Review `/docs/architecture.md` to understand the system architecture and project structure
+2. Check other documentation in `/docs/components/`
+3. Examine completed tasks in `/tasks/completed/` for similar work
+
+## Code Quality Guidelines
+
+When implementing solutions:
+
+1. Follow the project's coding standards
+2. Write clean, well-documented code
+3. Add appropriate tests
+4. Update documentation to reflect changes
+5. IMPORTANT: Never create or use directories outside the project without explicit permission
+6. For testing, always use local directories within the project and provide cleanup mechanisms
+
+## Communication Format
+
+When reporting progress or completion:
+
+1. Be specific about what was accomplished
+2. Reference specific files and line numbers
+3. Explain any deviations from the task plan
+4. Document any challenges encountered
+5. Suggest improvements to the workflow if applicable
+
+Remember to keep documentation up-to-date as you work, especially in the `/docs/` directory which helps maintain project knowledge.
+
+## Git/GitHub Operations
+
+When working with Git and GitHub:
+
+1. **Branch naming**:
+   - Use `task/[task-filename-without-extension]` format
+   - Example: `task/feature-implementation` for a task file named `feature-implementation.md`
+
+2. **Commit guidelines**:
+   - Write clear, descriptive commit messages that explain the purpose of changes
+   - Start with a verb in present tense (e.g., "Add", "Fix", "Update")
+   - Never include AI attribution in commit messages (no "Created by Claude" or similar)
+   - Make atomic commits that address a single concern
+   - Include only relevant files in your commits
+
+3. **Pull Request format**:
+   - Title: Task name or brief description of changes
+   - Body: Include summary of changes and test plan
+   - Link PR to the task file by updating task metadata
+   - Keep PR focused on a single task or purpose
+
+4. **PR Review process**:
+   - Address all feedback in the PR review
+   - Update the task file with notes about changes made
+   - Wait for approval before merging
+
+5. **Task completion**:
+   - Only move task to completed folder after PR is merged
+   - Include final PR status and merge date in the task file
+
+For detailed guidance on GitHub operations using MCP tools, see `/docs/agentic/github-mcp-guide.md`.
+</file>
+
+<file path="docs/components/bootstrap-script.md">
+# Component: Bootstrap Script (agentic-bootstrap.sh)
+
+## Purpose
+The bootstrap script initializes the AI agent workflow structure in a target project. It creates the necessary directories and template files to enable a standardized task management process.
+
+## Responsibilities
+- Create the directory structure for the AI agent workflow
+- Generate template files for task management and documentation
+- Provide initial guidance for using the workflow
+- Set up an example task to demonstrate the workflow
+- Safely handle existing files (idempotent operation)
+- Configure GitHub MCP integration (enabled by default, can be disabled)
+
+## Interfaces
+- **Input**: 
+  - Optional project directory path (defaults to current directory)
+  - Optional flags:
+    - `--with-adr`: Include Architecture Decision Records
+    - `--without-github-mcp`: Disable GitHub MCP workflow integration (enabled by default)
+    - `--force`: Overwrite existing files even if they already exist
+- **Output**: Directory structure and template files created in the target location
+
+## Dependencies
+- Bash shell
+- Standard Unix utilities (mkdir, cat, echo)
+
+## Design Decisions
+- Self-contained in a single script for easy deployment
+- Creates all necessary directories and files in one operation
+- Provides helpful output to guide the user on next steps
+- Uses here-documents (EOF) to create template files with proper formatting
+- Sets `-e` flag to fail fast if any errors occur during execution
+- Idempotent by default (doesn't overwrite existing files unless forced)
+- Uses temporary files to handle heredoc content creation safely
+- GitHub MCP integration enabled by default to streamline Git/GitHub workflows
+- Uses flag convention with "without" prefix for disabling default features
+
+## Examples
+
+Basic usage (in current directory, with GitHub MCP integration enabled by default):
+```bash
+./agentic-bootstrap.sh
+```
+
+Specify a target directory:
+```bash
+./agentic-bootstrap.sh /path/to/project
+```
+
+Include Architecture Decision Records:
+```bash
+./agentic-bootstrap.sh --with-adr
+```
+
+Without GitHub MCP integration:
+```bash
+./agentic-bootstrap.sh --without-github-mcp
+```
+
+Force overwrite of existing files:
+```bash
+./agentic-bootstrap.sh --force
+```
+
+Combining options:
+```bash
+./agentic-bootstrap.sh --with-adr --without-github-mcp --force /path/to/project
+```
+
+After running, point AI agents to the docs/agentic/ai-readme.md file to get started with the workflow.
+</file>
+
+<file path="tasks/started/github-mcp-integration.md">
+# Task: GitHub MCP Integration Implementation
+
+**Status**: started
+**Started**: 2025-04-10
+**Branch**: task/github-mcp-integration
+**PR**: #1
+**PR URL**: https://github.com/chris-sanders/ai-bootstrap/pull/1
+**PR Status**: Open
+
+## Objective
+Enhance the AI Bootstrap workflow to incorporate GitHub MCP functionality by default, enabling AI agents to perform Git/GitHub operations as part of the task lifecycle and creating a seamless transition from task completion to code review.
+
+## Context
+The current AI Bootstrap workflow manages tasks through file movement but lacks integration with Git/GitHub operations via the MCP (Model Capability Provider) interface. Adding GitHub MCP support would create a more comprehensive workflow that extends from task management to code review.
+
+AI agents are capable of performing Git/GitHub operations through MCP tools, but need structured guidelines and documentation to follow a consistent process. The MCP tool configuration itself is handled at the user level in Claude Code, not at the project level.
+
+## Success Criteria
+- [x] Documentation updated with MCP GitHub operations guidelines
+- [x] AI workflow extended to include GitHub operations by default
+- [x] Bootstrap script enhanced with GitHub MCP flag (enabled by default, with option to disable)
+- [x] This task itself used as a validation test for the GitHub MCP workflow
+- [x] Branch created and PR submitted as part of completing this task
+
+## Dependencies
+None
+
+## Implementation Plan
+### Phase 1: Documentation and Workflow Integration
+1. Update AI agent instructions:
+   - Extend `/docs/agentic/ai-readme.md` with a new section on GitHub operations using MCP
+   - Define PR creation as a standard part of the workflow when GitHub integration is enabled
+   - Include clear guidelines for branch naming conventions (based on task filenames)
+   - Document requirement to update task files with PR information once created
+   - Document how to track PR review progress within task update sections
+   - Clarify task status workflow:
+     * Tasks remain in "started" folder while PRs are under review
+     * Tasks include PR status in metadata with branch name and PR number
+     * Tasks only move to "completed" after PR is merged
+
+2. Create MCP GitHub operations guide:
+   - Add `/docs/agentic/github-mcp-guide.md` with specific MCP command formats
+   - Include command templates for creating branches, committing code changes, creating pull requests, and responding to review comments
+   - Clearly state that MCP tool configuration is handled at the user level in Claude Code, not at the project level
+
+3. Update task metadata format:
+   - Add fields for tracking GitHub artifacts (branch name, PR number, PR status)
+   - Update progress updates section format to include GitHub status transitions
+   - Define standard format for branch names (e.g., `task/github-mcp-integration`)
+
+### Phase 2: Bootstrap Script Enhancement
+1. Modify bootstrap script for GitHub MCP integration:
+   - Enable GitHub MCP workflow by default
+   - Add `--without-github-mcp` flag to `agentic-bootstrap.sh` to disable GitHub integration when needed
+   - Maintain idempotent behavior - adding/removing the flag in subsequent runs won't modify existing files unless `--force` is also used
+   - Modify the help text to explain this feature and the need for `--force` to update existing files
+   - Ensure bootstrap script only configures workflow instructions, not MCP server configuration
+
+### Phase 3: Testing and Validation
+1. Use this task as its own test case:
+   - Implement the GitHub MCP integration as defined in the plan
+   - Create a branch following the naming convention defined in the documentation
+   - Make required changes to implement the task
+   - Create a PR and update this task's metadata
+   - This self-referential approach validates the workflow in a real scenario
+
+## Validation Plan
+- Test bootstrap script with default settings:
+  - Verify it creates the GitHub MCP guide document
+  - Verify it updates the AI agent instructions with GitHub operations
+  - Confirm idempotent behavior (doesn't overwrite existing files without --force)
+
+- Test bootstrap script with --without-github-mcp flag:
+  - Verify it doesn't include GitHub MCP documentation and workflow sections
+
+- Test the GitHub MCP integration using this task:
+  - Create branch for this task following naming convention
+  - Make required implementation changes
+  - Create PR and update task metadata
+  - Verify task can remain in "started" folder during PR review
+  - Verify task file is updated with PR information
+
+- Test with both new and existing projects:
+  - Verify the GitHub MCP integration works when bootstrapping a new project
+  - Verify adding or removing GitHub MCP support to an existing project works correctly with the --force flag
+
+## Evidence of Completion
+- [x] Command output or logs demonstrating completion: All tests pass successfully with the updated test script
+- [x] Path to created/modified files:
+  - Added `/docs/agentic/github-mcp-guide.md` with GitHub MCP operations documentation
+  - Updated `/docs/agentic/ai-readme.md` with GitHub operations workflow
+  - Modified `agentic-bootstrap.sh` to add GitHub MCP integration by default
+  - Updated `test_bootstrap.sh` to test GitHub MCP integration features
+  - Updated `docs/components/bootstrap-script.md` to document the new feature
+  - Updated `docs/components/test-bootstrap-script.md` to reflect the enhanced tests
+- [x] Summary of changes made:
+  1. Created comprehensive GitHub MCP operations guide with command templates
+  2. Updated AI agent instructions with Git/GitHub workflow procedures
+  3. Added GitHub MCP integration to bootstrap script (enabled by default)
+  4. Implemented `--without-github-mcp` flag to disable GitHub integration
+  5. Enhanced test script with additional tests for GitHub MCP features
+  6. Updated documentation to reflect all changes
+  7. Maintained idempotent behavior with the new features
+  8. Updated bootstrap script help text with new flag details
+- [x] Branch name created for this task: `task/github-mcp-integration`
+- [x] PR number and URL for this task: [PR #1](https://github.com/chris-sanders/ai-bootstrap/pull/1)
+
+## Notes
+- This task only configures workflow instructions for GitHub MCP, it does not configure the Claude Code MCP server itself, as that's handled at the user level.
+- The flag follows the same convention as the existing `--with-adr` flag, but inverse logic as it disables a feature that's on by default.
+- For Phase 4 (Future Work), a placeholder task for GitHub issues integration should be created in `/tasks/backlog/` after this task is completed, but is not part of this immediate implementation.
+- Task status flow: Tasks stay in "started" folder until PR is merged, even after implementation is complete. This ensures AI agents can find and continue work on tasks with open PRs by looking in the "started" folder.
+
+## Progress Updates
+2025-04-10: Started working on the task. Created branch `task/github-mcp-integration` and moved task to started folder.
+2025-04-10: Implemented GitHub MCP documentation. Created `/docs/agentic/github-mcp-guide.md` with comprehensive guide for Git/GitHub operations.
+2025-04-10: Updated AI agent instructions in `/docs/agentic/ai-readme.md` with GitHub workflow procedures.
+2025-04-10: Modified bootstrap script to enable GitHub MCP by default and added `--without-github-mcp` flag.
+2025-04-10: Enhanced test script to verify GitHub MCP integration features with additional test cases.
+2025-04-10: Updated component documentation for both bootstrap script and test script.
+2025-04-10: Ran tests successfully, verifying all GitHub MCP integration features work as expected.
+2025-04-10: Added explicit guidance about using existing test scripts rather than manual testing.
+2025-04-10: Created PR #1 for the task using MCP tools as documented in the guide.
+2025-04-10: Received PR feedback about including detailed information in the PR description. Updated PR description to include files modified, changes made, and important notes.
+</file>
+
+<file path="agentic-bootstrap.sh">
+#!/bin/bash
+# AI Agent Development Workflow Bootstrap Script
+# This script sets up the agentic workflow structure in your project
+# Usage: ./agentic-bootstrap.sh [options] [project_directory]
+# Options:
+#   --with-adr         Include ADR (Architecture Decision Records) documentation
+#   --without-github-mcp  Disable GitHub MCP workflow integration (enabled by default)
+#   --force            Overwrite existing files even if they already exist
+
+set -e
+
+# Parse command line arguments
+INCLUDE_ADR=false
+INCLUDE_GITHUB_MCP=true
+FORCE=false
+PROJECT_DIR="."
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --with-adr)
+      INCLUDE_ADR=true
+      shift
+      ;;
+    --without-github-mcp)
+      INCLUDE_GITHUB_MCP=false
+      shift
+      ;;
+    --force)
+      FORCE=true
+      shift
+      ;;
+    *)
+      PROJECT_DIR="$1"
+      shift
+      ;;
+  esac
+done
+
+AGENTIC_DIR="$PROJECT_DIR/docs/agentic"
+TASKS_DIR="$PROJECT_DIR/tasks"
+DOCS_DIR="$PROJECT_DIR/docs"
+
+# Helper function to create files idempotently
+create_file() {
+  local file_path="$1"
+  local content_file="$2"
+  
+  # Create directories if they don't exist
+  mkdir -p "$(dirname "$file_path")"
+  
+  # Only create/overwrite the file if it doesn't exist or force is enabled
+  if [ ! -f "$file_path" ] || [ "$FORCE" = true ]; then
+    cat "$content_file" > "$file_path"
+    echo "Created: $file_path"
+  else
+    echo "Skipped: $file_path (already exists, use --force to overwrite)"
+  fi
+}
+
+# Function to create a file with content from a heredoc
+create_file_with_content() {
+  local file_path="$1"
+  local temp_file=$(mktemp)
+  
+  # Write stdin content to temp file
+  cat > "$temp_file"
+  
+  # Create the actual file
+  create_file "$file_path" "$temp_file"
+  
+  # Clean up temp file
+  rm "$temp_file"
+}
+
+echo "Setting up AI Agent Development Workflow in $PROJECT_DIR"
+
+# Create directory structure
+mkdir -p "$AGENTIC_DIR/templates"
+mkdir -p "$TASKS_DIR/backlog" "$TASKS_DIR/ready" "$TASKS_DIR/started" "$TASKS_DIR/completed"
+mkdir -p "$DOCS_DIR/components"
+
+# Create decisions directory only if ADR is enabled
+if [ "$INCLUDE_ADR" = true ]; then
+  mkdir -p "$DOCS_DIR/decisions"
+  echo "Including ADR documentation"
+fi
+
+# Display GitHub MCP status
+if [ "$INCLUDE_GITHUB_MCP" = true ]; then
+  echo "Including GitHub MCP workflow integration (default)"
+else
+  echo "GitHub MCP workflow integration disabled"
+fi
+
+# Create AI readme file
+if [ "$INCLUDE_GITHUB_MCP" = true ]; then
+  # AI readme with GitHub MCP integration
+  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
+# AI Agent Instructions
+
+This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
+
+## Task Management Workflow
+
+As an AI agent, you should:
+
+1. **Find tasks to work on**:
+   - Look in `/tasks/ready/` for tasks to work on
+   - Check dependencies to ensure they are completed
+
+2. **Start working on a task**:
+   - Move the task file from `/tasks/ready/` to `/tasks/started/`
+   - Update the task's metadata:
+     - Change `**Status**: ready` to `**Status**: started` 
+     - Add `**Started**: YYYY-MM-DD` with today's date
+   - Create a branch for the task:
+     - Use naming convention: `task/[task-filename-without-extension]`
+     - Example: `git checkout -b task/feature-implementation`
+   - Add branch name to metadata: `**Branch**: task/feature-implementation`
+   - Add a progress note with the current date in the Progress Updates section
+
+3. **Work on the task**:
+   - Follow the implementation plan in the task file
+   - Update the task file with progress notes
+   - Create or modify necessary code files
+   - Run tests specified in the validation plan
+   - Commit changes with descriptive messages
+   - Update the task progress regularly with implementation details
+
+4. **Create a Pull Request**:
+   - When implementation is complete, create a PR:
+     - Use the task name as the PR title
+     - Include summary of changes and test plan in the PR body
+   - Update the task's metadata:
+     - Add `**PR**: #[PR-number]` 
+     - Add `**PR URL**: [PR-URL]`
+     - Add `**PR Status**: Open`
+   - Add a progress note with PR creation details
+   - Keep the task in the `/tasks/started/` folder while PR is under review
+
+5. **Handle PR Feedback**:
+   - Make requested changes to address PR feedback
+   - Commit changes with descriptive messages
+   - Update the task progress with details of changes
+   - Keep the task in the `/tasks/started/` folder until PR is merged
+
+6. **Complete a task** (after PR is merged):
+   - Update the task's metadata:
+     - Change `**Status**: started` to `**Status**: completed`
+     - Add `**Completed**: YYYY-MM-DD` with today's date
+     - Update `**PR Status**: Merged`
+   - Document evidence of completion
+   - Move the task file from `/tasks/started/` to `/tasks/completed/`
+   - Update relevant documentation in `/docs/` if necessary
+
+7. **Report completion**:
+   - Summarize what was accomplished
+   - List evidence of completion
+   - Suggest next steps or related tasks
+
+## Context Understanding
+
+Before working on any task:
+
+1. Review `/docs/architecture.md` to understand the system architecture and project structure
+2. Check other documentation in `/docs/components/`
+3. Examine completed tasks in `/tasks/completed/` for similar work
+
+## Code Quality Guidelines
+
+When implementing solutions:
+
+1. Follow the project's coding standards
+2. Write clean, well-documented code
+3. Add appropriate tests
+4. Update documentation to reflect changes
+5. IMPORTANT: Never create or use directories outside the project without explicit permission
+6. For testing, always use local directories within the project and provide cleanup mechanisms
+
+## Communication Format
+
+When reporting progress or completion:
+
+1. Be specific about what was accomplished
+2. Reference specific files and line numbers
+3. Explain any deviations from the task plan
+4. Document any challenges encountered
+5. Suggest improvements to the workflow if applicable
+
+Remember to keep documentation up-to-date as you work, especially in the `/docs/` directory which helps maintain project knowledge.
+
+## Git/GitHub Operations
+
+When working with Git and GitHub:
+
+1. **Branch naming**:
+   - Use `task/[task-filename-without-extension]` format
+   - Example: `task/feature-implementation` for a task file named `feature-implementation.md`
+
+2. **Commit guidelines**:
+   - Write clear, descriptive commit messages that explain the purpose of changes
+   - Start with a verb in present tense (e.g., "Add", "Fix", "Update")
+   - Never include AI attribution in commit messages (no "Created by Claude" or similar)
+   - Make atomic commits that address a single concern
+   - Include only relevant files in your commits
+
+3. **Pull Request format**:
+   - Title: Task name or brief description of changes
+   - Body: Include summary of changes and test plan
+   - Link PR to the task file by updating task metadata
+   - Keep PR focused on a single task or purpose
+
+4. **PR Review process**:
+   - Address all feedback in the PR review
+   - Update the task file with notes about changes made
+   - Wait for approval before merging
+
+5. **Task completion**:
+   - Only move task to completed folder after PR is merged
+   - Include final PR status and merge date in the task file
+
+For detailed guidance on GitHub operations using MCP tools, see `/docs/agentic/github-mcp-guide.md`.
+EOF
+
+  # Create GitHub MCP guide file
+  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/github-mcp-guide.md"
+# GitHub MCP Operations Guide
+
+This document provides guidance on how to use GitHub MCP (Model Capability Provider) tools for Git and GitHub operations as part of the AI workflow.
+
+## Prerequisites
+
+- Claude Code must be configured with GitHub MCP access at the user level
+- The repository must be a valid git repository
+
+## Branch Management
+
+### Creating a New Branch
+
+When starting a task, create a branch using the following naming convention:
+
+```
+task/[task-filename-without-extension]
+```
+
+Example for a task file named `feature-implementation.md`:
+
+```
+git checkout -b task/feature-implementation
+```
+
+### Working with Branches
+
+Basic branch operations:
+
+```bash
+# Check current branch
+git branch
+
+# Switch to another branch
+git checkout [branch-name]
+
+# Create and switch to a new branch
+git checkout -b [branch-name]
+```
+
+## Making Changes
+
+### Staging Changes
+
+```bash
+# Stage specific files
+git add [file-path]
+
+# Stage all changes
+git add .
+
+# Check what's staged
+git status
+```
+
+### Committing Changes
+
+```bash
+# Commit staged changes with a message
+git commit -m "Descriptive message about changes"
+
+# Commit all tracked files with a message
+git commit -am "Descriptive message about changes"
+```
+
+### Good Commit Messages
+
+- Be descriptive but concise
+- Focus on "why" rather than "what" when possible
+- Start with a verb in present tense (e.g., "Add", "Fix", "Update")
+- Do not include AI attribution (no "Created by Claude" or similar)
+
+## Pull Requests
+
+### Creating a Pull Request
+
+After pushing your branch, create a pull request using the MCP tools:
+
+```
+# Format
+mcp__github__create_pull_request:
+  owner: [repository-owner]
+  repo: [repository-name]
+  title: "Implement [task-name]"
+  head: [branch-name]
+  base: master
+  body: "PR description with summary and test plan"
+```
+
+### PR Description Template
+
+```
+## Summary
+- Brief summary of changes
+- Purpose of the changes
+
+## Test Plan
+- Steps to test the changes
+- Expected results
+```
+
+### Updating Task with PR Information
+
+After creating a PR, update the task file with:
+
+```
+**PR**: #[PR-number]
+**PR URL**: [PR-URL]
+**PR Status**: Open
+```
+
+### Handling PR Feedback
+
+When receiving PR feedback:
+
+1. Make requested changes
+2. Commit with a descriptive message
+3. Update the task progress section with:
+   ```
+   [Date]: Updated PR with requested changes: [summary of changes]
+   ```
+
+## Merging Process
+
+When a PR is approved and ready to merge:
+
+```
+# Format
+mcp__github__merge_pull_request:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  merge_method: "squash"  # or "merge" or "rebase"
+```
+
+After merging:
+1. Update the task file with `**PR Status**: Merged`
+2. Move the task from `started` to `completed` folder
+3. Update the task status to `completed` with completion date
+
+## Review Workflows
+
+### Adding PR Comments
+
+```
+# Format
+mcp__github__create_pull_request_review:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  event: "COMMENT"  # or "APPROVE" or "REQUEST_CHANGES"
+  body: "Comment text"
+```
+
+### Approving a PR
+
+```
+# Format
+mcp__github__create_pull_request_review:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  event: "APPROVE"
+  body: "Approval comment"
+```
+
+## Important Notes
+
+- MCP tool configuration is handled at the user level in Claude Code, not at the project level
+- This guide only covers workflow instructions for GitHub operations
+- When the GitHub workflow is enabled, creating PRs is a standard part of task completion
+- Tasks remain in the "started" folder while PRs are under review
+- Tasks only move to "completed" after PR is merged
+EOF
+
+else
+  # AI readme without GitHub MCP integration
+  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
+# AI Agent Instructions
+
+This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
+
+## Task Management Workflow
+
+As an AI agent, you should:
+
+1. **Find tasks to work on**:
+   - Look in `/tasks/ready/` for tasks to work on
+   - Check dependencies to ensure they are completed
+
+2. **Start working on a task**:
+   - Move the task file from `/tasks/ready/` to `/tasks/started/`
+   - Add a note with the current date in the Progress Updates section
+
+3. **Work on the task**:
+   - Follow the implementation plan in the task file
+   - Update the task file with progress notes
+   - Create or modify necessary code files
+   - Run tests specified in the validation plan
+
+4. **Complete a task**:
+   - Verify all success criteria are met
+   - Document evidence of completion
+   - Add a completion note with the current date in the Progress Updates section
+   - Move the task file from `/tasks/started/` to `/tasks/completed/`
+   - Update relevant documentation in `/docs/` if necessary
+
+5. **Report completion**:
+   - Summarize what was accomplished
+   - List evidence of completion
+   - Suggest next steps or related tasks
+
+## Context Understanding
+
+Before working on any task:
+
+1. Review `/docs/architecture.md` to understand the system architecture and project structure
+2. Check other documentation in `/docs/components/`
+3. Examine completed tasks in `/tasks/completed/` for similar work
+
+## Code Quality Guidelines
+
+When implementing solutions:
+
+1. Follow the project's coding standards
+2. Write clean, well-documented code
+3. Add appropriate tests
+4. Update documentation to reflect changes
+5. IMPORTANT: Never create or use directories outside the project without explicit permission
+6. For testing, always use local directories within the project and provide cleanup mechanisms
+
+## Communication Format
+
+When reporting progress or completion:
+
+1. Be specific about what was accomplished
+2. Reference specific files and line numbers
+3. Explain any deviations from the task plan
+4. Document any challenges encountered
+5. Suggest improvements to the workflow if applicable
+
+Remember to keep documentation up-to-date as you work, especially in the `/docs/` directory which helps maintain project knowledge.
+
+## Git Commit Guidelines
+
+When committing changes:
+
+1. Use clear, descriptive commit messages that explain the purpose of changes
+2. Never include AI attribution in commit messages (no "Created by Claude" or similar)
+3. Follow the project's commit message format
+4. Include only relevant files in your commits
+5. Make atomic commits that address a single concern
+EOF
+fi
+
+# Create task template
+cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/task-template.md"
+# Task: [Task Title]
+
+## Objective
+[Clear, measurable objective of this task]
+
+## Context
+[Relevant background information and links to related resources]
+
+## Success Criteria
+- [ ] [Specific, testable outcome 1]
+- [ ] [Specific, testable outcome 2]
+- [ ] [etc.]
+
+## Dependencies
+[Any prerequisite tasks or components]
+
+## Implementation Plan
+1. [Step 1]
+2. [Step 2]
+3. [etc.]
+
+## Validation Plan
+- [Test 1 description]
+- [Test 2 description]
+
+## Evidence of Completion
+(To be filled by AI)
+- [ ] Command output or logs demonstrating completion
+- [ ] Path to created/modified files
+- [ ] Summary of changes made
+
+## Notes
+[Any additional information]
+
+## Progress Updates
+(To be filled by AI during implementation)
+EOF
+
+# Create component documentation template
+cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/component-doc.md"
+# Component: [Component Name]
+
+## Purpose
+[Brief description of the component's purpose]
+
+## Responsibilities
+- [Responsibility 1]
+- [Responsibility 2]
+- [etc.]
+
+## Interfaces
+- **Input**: [What data/signals the component receives]
+- **Output**: [What data/signals the component produces]
+
+## Dependencies
+- [Dependency 1]
+- [Dependency 2]
+
+## Design Decisions
+- [Design decision 1]
+- [Design decision 2]
+
+## Examples
+[Usage examples]
+EOF
+
+# Create architecture document
+cat << 'EOF' | create_file_with_content "$DOCS_DIR/architecture.md"
+# System Architecture
+
+This document describes the overall system architecture.
+
+## Overview
+[High-level description of the system]
+
+## Components
+[List of key components and their relationships]
+
+## Data Flow
+[Description of how data flows through the system]
+
+## Deployment Model
+[How the system is deployed]
+
+## Technologies
+[Key technologies used]
+EOF
+
+# Create ADR template if enabled
+if [ "$INCLUDE_ADR" = true ]; then
+  cat << 'EOF' | create_file_with_content "$DOCS_DIR/decisions/ADR-template.md"
+# Decision Record: [Title]
+
+## Status
+[Proposed/Accepted/Deprecated/Superseded]
+
+## Context
+[Describe the context and problem statement]
+
+## Decision
+[Describe the decision that was made]
+
+## Consequences
+### Positive
+[List positive consequences]
+
+### Negative
+[List negative consequences]
+
+## Implementation
+[Describe implementation details if applicable]
+EOF
+fi
+
+# Create a sample task
+cat << 'EOF' | create_file_with_content "$TASKS_DIR/backlog/TASK-001-example.md"
+# Task: Example Task
+
+## Objective
+Create a simple "Hello World" example to verify the project setup.
+
+## Context
+This is a sample task to demonstrate the workflow structure.
+
+## Success Criteria
+- [ ] Create a simple "Hello World" application
+- [ ] Add basic documentation
+- [ ] Verify it runs correctly
+
+## Dependencies
+None
+
+## Implementation Plan
+1. Set up basic project structure
+2. Implement "Hello World" functionality
+3. Add documentation
+
+## Validation Plan
+- Run the application and verify it outputs "Hello World"
+- Check that documentation is clear and complete
+
+## Evidence of Completion
+(To be filled by AI)
+- [ ] Command output or logs showing successful execution
+- [ ] Path to created/modified files
+- [ ] Link to documentation files
+
+## Notes
+This is just an example task to get started.
+
+## Progress Updates
+(To be filled by AI during implementation)
+EOF
+
+echo "Workflow initialized successfully!"
+echo ""
+echo "Next steps:"
+echo "1. Customize the architecture documentation in $DOCS_DIR/architecture.md"
+echo "2. Review the sample task in $TASKS_DIR/backlog/TASK-001-example.md"
+echo "3. Create additional tasks using the template in $AGENTIC_DIR/templates/task-template.md"
+echo ""
+if [ "$INCLUDE_ADR" = true ]; then
+  echo "4. Create ADRs in $DOCS_DIR/decisions/ to document architecture decisions"
+  echo ""
+fi
+echo "To start working with an AI agent:"
+echo "1. Move tasks from backlog to ready when they're fully defined and ready for implementation"
+echo "2. Point the AI agent to your project repository"
+echo "3. Instruct it to read $AGENTIC_DIR/ai-readme.md first"
+echo "4. The agent will find tasks in the ready folder and begin working"
+echo ""
+echo "Script options:"
+echo "- To include Architecture Decision Records: --with-adr"
+echo "- To disable GitHub MCP workflow integration (enabled by default): --without-github-mcp"
+echo "- To force overwrite of existing files: --force"
+</file>
+
+<file path="README.md">
+# AI Bootstrap
+
+A minimalist workflow for managing AI agent tasks in software projects.
+
+## Overview
+
+AI agents have become increasingly capable of helping with software development tasks, but there's a need for a standardized approach to delegating work to them and tracking their progress. This project provides a structured task lifecycle with a simple directory organization that makes it easy to manage AI contributions in any project.
+
+## Key Features
+
+- **Task-based workflow**: Clear status transitions from backlog → ready → started → completed
+- **Directory structure** that reflects the task status
+- **Standardized task format** with metadata, objectives, success criteria, and validation plans
+- **Supporting documentation** with architecture details and instructions for AI agents
+- **Easy bootstrapping** via a single script that sets up the entire structure
+
+## Getting Started
+
+### Option 1: Direct Installation (Recommended)
+
+You can set up the AI Bootstrap workflow directly from the root of your project with a single command:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | bash
+```
+
+### Option 2: Clone and Run
+
+```bash
+# Clone this repository
+git clone https://github.com/chris-sanders/ai-bootstrap.git
+
+# Run the bootstrap script in your project
+./ai-bootstrap/agentic-bootstrap.sh
+```
+
+## Usage
+
+1. Create tasks in the `/tasks/backlog/` directory using the provided template
+2. Move tasks to `/tasks/ready/` when they're fully defined and ready for implementation
+3. Point an AI agent to your project and instruct it to read `/docs/agentic/ai-readme.md`
+4. The AI agent will find tasks in the ready folder, work on them, and move them to the completed folder
+5. Review and integrate the AI agent's work
+
+## Benefits
+
+- Provides a consistent way to manage AI agent contributions
+- Makes it clear what tasks are available and their current status
+- Enables tracking of task progress
+- Minimal overhead for project teams to adopt
+- Easy for AI agents to understand and follow
+
+## Customization
+
+The workflow is designed to be minimalist but can be customized for specific project needs. You can modify the task template, documentation structure, or add additional components as needed.
+
+## Safety Note
+
+When using the curl | bash installation method, it's always a good practice to examine the script before running it. You can do this by:
+
+```bash
+# First inspect the script
+curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | less
+
+# Then run it if you're comfortable with what it does
+curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | bash
+```
+
+The bootstrap script is designed to be non-destructive (it won't overwrite existing files unless you use the `--force` flag) and operates only within the specified project directory.
+</file>
+
+<file path="test_bootstrap.sh">
+#!/bin/bash
+# Test script for agentic-bootstrap.sh idempotent behavior
+# This script validates the idempotent behavior of the bootstrap script
+# It verifies that the script:
+# - Creates files in an empty directory
+# - Doesn't overwrite existing files unless forced
+# - Replaces missing files
+# - Overwrites existing files when force flag is used
+# - Properly handles GitHub MCP integration flags
+# Usage: ./test_bootstrap.sh [--no-cleanup]
+
+set -e  # Exit on error
+
+# Parse command line arguments
+CLEANUP=true
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --no-cleanup)
+      CLEANUP=false
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Usage: ./test_bootstrap.sh [--no-cleanup]"
+      exit 1
+      ;;
+  esac
+done
+
+# Create a temporary test directory in the local project
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEST_DIR="${SCRIPT_DIR}/test_bootstrap_$(date +%s)"
+mkdir -p "$TEST_DIR"
+echo "Using test directory: $TEST_DIR"
+echo ""
+
+# Define colors for output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Test function to validate a specific test case
+run_test() {
+  local test_name="$1"
+  local expected_result="$2"
+  local command="$3"
+  
+  echo -e "${BLUE}Test: $test_name${NC}"
+  echo "  Command: $command"
+  
+  # Run the command and capture output
+  local output=$(eval "$command")
+  
+  # Check if the output contains the expected result
+  if echo "$output" | grep -q "$expected_result"; then
+    echo -e "  ${GREEN}✓ PASS: Found expected output: '$expected_result'${NC}"
+    return 0
+  else
+    echo -e "  ${RED}✗ FAIL: Expected output '$expected_result' not found${NC}"
+    echo "  Actual output: $output"
+    return 1
+  fi
+}
+
+# Test function to verify file existence
+check_file_exists() {
+  local file_path="$1"
+  local expected_exists="$2"
+  local message="$3"
+  
+  if [ "$expected_exists" = true ]; then
+    if [ -f "$file_path" ]; then
+      echo -e "  ${GREEN}✓ PASS: $message${NC}"
+      return 0
+    else
+      echo -e "  ${RED}✗ FAIL: $message - File doesn't exist: $file_path${NC}"
+      return 1
+    fi
+  else
+    if [ ! -f "$file_path" ]; then
+      echo -e "  ${GREEN}✓ PASS: $message${NC}"
+      return 0
+    else
+      echo -e "  ${RED}✗ FAIL: $message - File exists but shouldn't: $file_path${NC}"
+      return 1
+    fi
+  fi
+}
+
+# Test function to check file content
+check_file_content() {
+  local file_path="$1"
+  local pattern="$2"
+  local should_contain="$3"
+  local message="$4"
+  
+  if [ "$should_contain" = true ]; then
+    if grep -q "$pattern" "$file_path"; then
+      echo -e "  ${GREEN}✓ PASS: $message${NC}"
+      return 0
+    else
+      echo -e "  ${RED}✗ FAIL: $message - Pattern not found: '$pattern'${NC}"
+      return 1
+    fi
+  else
+    if ! grep -q "$pattern" "$file_path"; then
+      echo -e "  ${GREEN}✓ PASS: $message${NC}"
+      return 0
+    else
+      echo -e "  ${RED}✗ FAIL: $message - Pattern found but shouldn't be: '$pattern'${NC}"
+      return 1
+    fi
+  fi
+}
+
+# Copy the bootstrap script to the test directory
+cp "$(pwd)/agentic-bootstrap.sh" "$TEST_DIR/"
+
+# Change to the test directory
+cd "$TEST_DIR"
+
+echo "=== TEST SUITE: BOOTSTRAP SCRIPT IDEMPOTENT BEHAVIOR ==="
+echo ""
+
+# Test 1: Initial run - should create all files with GitHub MCP enabled by default
+echo "=== Test Case 1: Initial creation in empty directory with default settings ==="
+run_test "Initial creation" "Created:" "./agentic-bootstrap.sh" || exit 1
+check_file_exists "./docs/agentic/ai-readme.md" true "AI readme file created" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide created (default)" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" true "AI readme contains GitHub section" || exit 1
+echo ""
+
+# Test 2: Second run - should skip existing files
+echo "=== Test Case 2: Skip existing files on second run ==="
+run_test "Skip existing" "Skipped:" "./agentic-bootstrap.sh" || exit 1
+echo ""
+
+# Test 3: Modify a file and run again - should not overwrite
+echo "=== Test Case 3: Don't overwrite modified files ==="
+echo "MODIFIED CONTENT" >> "docs/agentic/ai-readme.md"
+run_test "Don't overwrite modified file" "Skipped:" "./agentic-bootstrap.sh" || exit 1
+
+# Check if the modification remains
+check_file_content "docs/agentic/ai-readme.md" "MODIFIED CONTENT" true "Modification was preserved" || exit 1
+echo ""
+
+# Test 4: Remove a file and run again - should recreate it
+echo "=== Test Case 4: Recreate deleted files ==="
+rm "docs/agentic/templates/task-template.md"
+run_test "Recreate deleted file" "Created: ./docs/agentic/templates/task-template.md" "./agentic-bootstrap.sh" || exit 1
+echo ""
+
+# Test 5: Force flag should overwrite existing files
+echo "=== Test Case 5: Force flag overwrites existing files ==="
+echo "MODIFIED CONTENT" >> "docs/agentic/ai-readme.md"
+run_test "Force overwrite" "Created: ./docs/agentic/ai-readme.md" "./agentic-bootstrap.sh --force" || exit 1
+
+# Check if the modification was overwritten
+check_file_content "docs/agentic/ai-readme.md" "MODIFIED CONTENT" false "File was successfully overwritten with --force flag" || exit 1
+echo ""
+
+# Test 6: Without GitHub MCP flag in new directory
+echo "=== Test Case 6: Without GitHub MCP flag ==="
+TEST_SUBDIR="without_github_mcp_test"
+mkdir -p "$TEST_SUBDIR"
+cd "$TEST_SUBDIR"
+cp "../agentic-bootstrap.sh" .
+
+run_test "Without GitHub MCP" "GitHub MCP workflow integration disabled" "./agentic-bootstrap.sh --without-github-mcp" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" false "GitHub MCP guide not created when disabled" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git Commit Guidelines" true "Basic Git section exists" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" false "GitHub MCP section not present when disabled" || exit 1
+cd ..
+echo ""
+
+# Test 7: Toggle GitHub MCP integration with force flag
+echo "=== Test Case 7: Toggle GitHub MCP integration with force flag ==="
+# 7a: Add GitHub MCP to previously disabled setup
+cd "$TEST_SUBDIR"
+run_test "Enable GitHub MCP with force" "Created:" "./agentic-bootstrap.sh --force" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide created when re-enabled" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" true "GitHub MCP section added when re-enabled" || exit 1
+cd ..
+
+# 7b: Disable GitHub MCP in default setup
+TEST_SUBDIR2="toggle_github_mcp_test"
+mkdir -p "$TEST_SUBDIR2"
+cd "$TEST_SUBDIR2"
+cp "../agentic-bootstrap.sh" .
+
+# First create with default (GitHub MCP enabled)
+run_test "Default GitHub MCP enabled" "Including GitHub MCP workflow integration" "./agentic-bootstrap.sh" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide exists by default" || exit 1
+
+# Then disable with force
+run_test "Disable GitHub MCP with force" "GitHub MCP workflow integration disabled" "./agentic-bootstrap.sh --without-github-mcp --force" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" false "GitHub MCP section removed when disabled with force" || exit 1
+cd ..
+echo ""
+
+echo -e "${GREEN}All tests passed successfully!${NC}"
+echo "Test directory: $TEST_DIR"
+
+# Clean up the test directory unless --no-cleanup was specified
+if [ "$CLEANUP" = true ]; then
+  echo "Cleaning up test directory..."
+  rm -rf "$TEST_DIR"
+  
+  # Verify the cleanup was successful
+  if [ -d "$TEST_DIR" ]; then
+    echo -e "${RED}ERROR: Failed to remove test directory!${NC}"
+    echo "Manual cleanup required: rm -rf $TEST_DIR"
+    exit 1
+  else
+    echo -e "${GREEN}Test directory successfully removed.${NC}"
+  fi
+else
+  echo "Test directory was preserved: $TEST_DIR"
+  echo "You can clean it up with: rm -rf $TEST_DIR"
+fi
+</file>
+
+</files>

@@ -101,9 +101,10 @@ mcp__github__create_pull_request:
 
 ### Updating Task with PR Information
 
-After creating a PR, update the task file with:
+After creating a PR, update the task file metadata and move it to the review folder:
 
 ```
+**Status**: review
 **PR**: #[PR-number]
 **PR URL**: [PR-URL]
 **PR Status**: Open
@@ -135,7 +136,7 @@ mcp__github__merge_pull_request:
 
 After merging:
 1. Update the task file with `**PR Status**: Merged`
-2. Move the task from `started` to `completed` folder
+2. Move the task from `review` to `completed` folder
 3. Update the task status to `completed` with completion date
 
 ## Review Workflows
@@ -169,5 +170,6 @@ mcp__github__create_pull_request_review:
 - MCP tool configuration is handled at the user level in Claude Code, not at the project level
 - This guide only covers workflow instructions for GitHub operations
 - When the GitHub workflow is enabled, creating PRs is a standard part of task completion
-- Tasks remain in the "started" folder while PRs are under review
-- Tasks only move to "completed" after PR is merged
+- Task workflow: backlog → ready → started → review → completed
+- Tasks move from "started" to "review" folder when PR is created
+- Tasks move from "review" to "completed" after PR is merged
