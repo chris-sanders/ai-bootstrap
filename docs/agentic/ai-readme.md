@@ -12,22 +12,50 @@ As an AI agent, you should:
 
 2. **Start working on a task**:
    - Move the task file from `/tasks/ready/` to `/tasks/started/`
-   - Add a note with the current date in the Progress Updates section
+   - Update the task's metadata:
+     - Change `**Status**: ready` to `**Status**: started` 
+     - Add `**Started**: YYYY-MM-DD` with today's date
+   - Create a branch for the task:
+     - Use naming convention: `task/[task-filename-without-extension]`
+     - Example: `git checkout -b task/feature-implementation`
+   - Add branch name to metadata: `**Branch**: task/feature-implementation`
+   - Add a progress note with the current date in the Progress Updates section
 
 3. **Work on the task**:
    - Follow the implementation plan in the task file
    - Update the task file with progress notes
    - Create or modify necessary code files
    - Run tests specified in the validation plan
+   - Commit changes with descriptive messages
+   - Update the task progress regularly with implementation details
 
-4. **Complete a task**:
-   - Verify all success criteria are met
+4. **Create a Pull Request**:
+   - When implementation is complete, create a PR:
+     - Use the task name as the PR title
+     - Include summary of changes and test plan in the PR body
+   - Update the task's metadata:
+     - Add `**PR**: #[PR-number]` 
+     - Add `**PR URL**: [PR-URL]`
+     - Add `**PR Status**: Open`
+   - Add a progress note with PR creation details
+   - Keep the task in the `/tasks/started/` folder while PR is under review
+
+5. **Handle PR Feedback**:
+   - Make requested changes to address PR feedback
+   - Commit changes with descriptive messages
+   - Update the task progress with details of changes
+   - Keep the task in the `/tasks/started/` folder until PR is merged
+
+6. **Complete a task** (after PR is merged):
+   - Update the task's metadata:
+     - Change `**Status**: started` to `**Status**: completed`
+     - Add `**Completed**: YYYY-MM-DD` with today's date
+     - Update `**PR Status**: Merged`
    - Document evidence of completion
-   - Add a completion note with the current date in the Progress Updates section
    - Move the task file from `/tasks/started/` to `/tasks/completed/`
    - Update relevant documentation in `/docs/` if necessary
 
-5. **Report completion**:
+7. **Report completion**:
    - Summarize what was accomplished
    - List evidence of completion
    - Suggest next steps or related tasks
@@ -48,6 +76,8 @@ When implementing solutions:
 2. Write clean, well-documented code
 3. Add appropriate tests
 4. Update documentation to reflect changes
+5. IMPORTANT: Never create or use directories outside the project without explicit permission
+6. For testing, always use local directories within the project and provide cleanup mechanisms
 
 ## Communication Format
 
@@ -61,12 +91,34 @@ When reporting progress or completion:
 
 Remember to keep documentation up-to-date as you work, especially in the `/docs/` directory which helps maintain project knowledge.
 
-## Git Commit Guidelines
+## Git/GitHub Operations
 
-When committing changes:
+When working with Git and GitHub:
 
-1. Use clear, descriptive commit messages that explain the purpose of changes
-2. Never include AI attribution in commit messages (no "Created by Claude" or similar)
-3. Follow the project's commit message format
-4. Include only relevant files in your commits
-5. Make atomic commits that address a single concern
+1. **Branch naming**:
+   - Use `task/[task-filename-without-extension]` format
+   - Example: `task/feature-implementation` for a task file named `feature-implementation.md`
+
+2. **Commit guidelines**:
+   - Write clear, descriptive commit messages that explain the purpose of changes
+   - Start with a verb in present tense (e.g., "Add", "Fix", "Update")
+   - Never include AI attribution in commit messages (no "Created by Claude" or similar)
+   - Make atomic commits that address a single concern
+   - Include only relevant files in your commits
+
+3. **Pull Request format**:
+   - Title: Task name or brief description of changes
+   - Body: Include summary of changes and test plan
+   - Link PR to the task file by updating task metadata
+   - Keep PR focused on a single task or purpose
+
+4. **PR Review process**:
+   - Address all feedback in the PR review
+   - Update the task file with notes about changes made
+   - Wait for approval before merging
+
+5. **Task completion**:
+   - Only move task to completed folder after PR is merged
+   - Include final PR status and merge date in the task file
+
+For detailed guidance on GitHub operations using MCP tools, see `/docs/agentic/github-mcp-guide.md`.

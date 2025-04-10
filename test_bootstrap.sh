@@ -6,6 +6,7 @@
 # - Doesn't overwrite existing files unless forced
 # - Replaces missing files
 # - Overwrites existing files when force flag is used
+# - Properly handles GitHub MCP integration flags
 # Usage: ./test_bootstrap.sh [--no-cleanup]
 
 set -e  # Exit on error
@@ -62,6 +63,57 @@ run_test() {
   fi
 }
 
+# Test function to verify file existence
+check_file_exists() {
+  local file_path="$1"
+  local expected_exists="$2"
+  local message="$3"
+  
+  if [ "$expected_exists" = true ]; then
+    if [ -f "$file_path" ]; then
+      echo -e "  ${GREEN}✓ PASS: $message${NC}"
+      return 0
+    else
+      echo -e "  ${RED}✗ FAIL: $message - File doesn't exist: $file_path${NC}"
+      return 1
+    fi
+  else
+    if [ ! -f "$file_path" ]; then
+      echo -e "  ${GREEN}✓ PASS: $message${NC}"
+      return 0
+    else
+      echo -e "  ${RED}✗ FAIL: $message - File exists but shouldn't: $file_path${NC}"
+      return 1
+    fi
+  fi
+}
+
+# Test function to check file content
+check_file_content() {
+  local file_path="$1"
+  local pattern="$2"
+  local should_contain="$3"
+  local message="$4"
+  
+  if [ "$should_contain" = true ]; then
+    if grep -q "$pattern" "$file_path"; then
+      echo -e "  ${GREEN}✓ PASS: $message${NC}"
+      return 0
+    else
+      echo -e "  ${RED}✗ FAIL: $message - Pattern not found: '$pattern'${NC}"
+      return 1
+    fi
+  else
+    if ! grep -q "$pattern" "$file_path"; then
+      echo -e "  ${GREEN}✓ PASS: $message${NC}"
+      return 0
+    else
+      echo -e "  ${RED}✗ FAIL: $message - Pattern found but shouldn't be: '$pattern'${NC}"
+      return 1
+    fi
+  fi
+}
+
 # Copy the bootstrap script to the test directory
 cp "$(pwd)/agentic-bootstrap.sh" "$TEST_DIR/"
 
@@ -71,9 +123,12 @@ cd "$TEST_DIR"
 echo "=== TEST SUITE: BOOTSTRAP SCRIPT IDEMPOTENT BEHAVIOR ==="
 echo ""
 
-# Test 1: Initial run - should create all files
-echo "=== Test Case 1: Initial creation in empty directory ==="
+# Test 1: Initial run - should create all files with GitHub MCP enabled by default
+echo "=== Test Case 1: Initial creation in empty directory with default settings ==="
 run_test "Initial creation" "Created:" "./agentic-bootstrap.sh" || exit 1
+check_file_exists "./docs/agentic/ai-readme.md" true "AI readme file created" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide created (default)" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" true "AI readme contains GitHub section" || exit 1
 echo ""
 
 # Test 2: Second run - should skip existing files
@@ -87,12 +142,7 @@ echo "MODIFIED CONTENT" >> "docs/agentic/ai-readme.md"
 run_test "Don't overwrite modified file" "Skipped:" "./agentic-bootstrap.sh" || exit 1
 
 # Check if the modification remains
-if grep -q "MODIFIED CONTENT" "docs/agentic/ai-readme.md"; then
-  echo -e "  ${GREEN}✓ PASS: Modification was preserved${NC}"
-else
-  echo -e "  ${RED}✗ FAIL: Modification was overwritten${NC}"
-  exit 1
-fi
+check_file_content "docs/agentic/ai-readme.md" "MODIFIED CONTENT" true "Modification was preserved" || exit 1
 echo ""
 
 # Test 4: Remove a file and run again - should recreate it
@@ -107,14 +157,48 @@ echo "MODIFIED CONTENT" >> "docs/agentic/ai-readme.md"
 run_test "Force overwrite" "Created: ./docs/agentic/ai-readme.md" "./agentic-bootstrap.sh --force" || exit 1
 
 # Check if the modification was overwritten
-if grep -q "MODIFIED CONTENT" "docs/agentic/ai-readme.md"; then
-  echo -e "  ${RED}✗ FAIL: Modified content was not overwritten with --force flag${NC}"
-  exit 1
-else
-  echo -e "  ${GREEN}✓ PASS: File was successfully overwritten with --force flag${NC}"
-fi
-
+check_file_content "docs/agentic/ai-readme.md" "MODIFIED CONTENT" false "File was successfully overwritten with --force flag" || exit 1
 echo ""
+
+# Test 6: Without GitHub MCP flag in new directory
+echo "=== Test Case 6: Without GitHub MCP flag ==="
+TEST_SUBDIR="without_github_mcp_test"
+mkdir -p "$TEST_SUBDIR"
+cd "$TEST_SUBDIR"
+cp "../agentic-bootstrap.sh" .
+
+run_test "Without GitHub MCP" "GitHub MCP workflow integration disabled" "./agentic-bootstrap.sh --without-github-mcp" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" false "GitHub MCP guide not created when disabled" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git Commit Guidelines" true "Basic Git section exists" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" false "GitHub MCP section not present when disabled" || exit 1
+cd ..
+echo ""
+
+# Test 7: Toggle GitHub MCP integration with force flag
+echo "=== Test Case 7: Toggle GitHub MCP integration with force flag ==="
+# 7a: Add GitHub MCP to previously disabled setup
+cd "$TEST_SUBDIR"
+run_test "Enable GitHub MCP with force" "Created:" "./agentic-bootstrap.sh --force" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide created when re-enabled" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" true "GitHub MCP section added when re-enabled" || exit 1
+cd ..
+
+# 7b: Disable GitHub MCP in default setup
+TEST_SUBDIR2="toggle_github_mcp_test"
+mkdir -p "$TEST_SUBDIR2"
+cd "$TEST_SUBDIR2"
+cp "../agentic-bootstrap.sh" .
+
+# First create with default (GitHub MCP enabled)
+run_test "Default GitHub MCP enabled" "Including GitHub MCP workflow integration" "./agentic-bootstrap.sh" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide exists by default" || exit 1
+
+# Then disable with force
+run_test "Disable GitHub MCP with force" "GitHub MCP workflow integration disabled" "./agentic-bootstrap.sh --without-github-mcp --force" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" false "GitHub MCP section removed when disabled with force" || exit 1
+cd ..
+echo ""
+
 echo -e "${GREEN}All tests passed successfully!${NC}"
 echo "Test directory: $TEST_DIR"
 

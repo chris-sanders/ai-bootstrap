@@ -9,11 +9,15 @@ The bootstrap script initializes the AI agent workflow structure in a target pro
 - Provide initial guidance for using the workflow
 - Set up an example task to demonstrate the workflow
 - Safely handle existing files (idempotent operation)
+- Configure GitHub MCP integration (enabled by default, can be disabled)
 
 ## Interfaces
 - **Input**: 
   - Optional project directory path (defaults to current directory)
-  - Optional flags (--with-adr, --force)
+  - Optional flags:
+    - `--with-adr`: Include Architecture Decision Records
+    - `--without-github-mcp`: Disable GitHub MCP workflow integration (enabled by default)
+    - `--force`: Overwrite existing files even if they already exist
 - **Output**: Directory structure and template files created in the target location
 
 ## Dependencies
@@ -28,10 +32,12 @@ The bootstrap script initializes the AI agent workflow structure in a target pro
 - Sets `-e` flag to fail fast if any errors occur during execution
 - Idempotent by default (doesn't overwrite existing files unless forced)
 - Uses temporary files to handle heredoc content creation safely
+- GitHub MCP integration enabled by default to streamline Git/GitHub workflows
+- Uses flag convention with "without" prefix for disabling default features
 
 ## Examples
 
-Basic usage (in current directory):
+Basic usage (in current directory, with GitHub MCP integration enabled by default):
 ```bash
 ./agentic-bootstrap.sh
 ```
@@ -46,9 +52,19 @@ Include Architecture Decision Records:
 ./agentic-bootstrap.sh --with-adr
 ```
 
+Without GitHub MCP integration:
+```bash
+./agentic-bootstrap.sh --without-github-mcp
+```
+
 Force overwrite of existing files:
 ```bash
 ./agentic-bootstrap.sh --force
+```
+
+Combining options:
+```bash
+./agentic-bootstrap.sh --with-adr --without-github-mcp --force /path/to/project
 ```
 
 After running, point AI agents to the docs/agentic/ai-readme.md file to get started with the workflow.

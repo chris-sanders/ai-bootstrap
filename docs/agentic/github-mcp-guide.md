@@ -1,0 +1,173 @@
+# GitHub MCP Operations Guide
+
+This document provides guidance on how to use GitHub MCP (Model Capability Provider) tools for Git and GitHub operations as part of the AI workflow.
+
+## Prerequisites
+
+- Claude Code must be configured with GitHub MCP access at the user level
+- The repository must be a valid git repository
+
+## Branch Management
+
+### Creating a New Branch
+
+When starting a task, create a branch using the following naming convention:
+
+```
+task/[task-filename-without-extension]
+```
+
+Example for a task file named `feature-implementation.md`:
+
+```
+git checkout -b task/feature-implementation
+```
+
+### Working with Branches
+
+Basic branch operations:
+
+```bash
+# Check current branch
+git branch
+
+# Switch to another branch
+git checkout [branch-name]
+
+# Create and switch to a new branch
+git checkout -b [branch-name]
+```
+
+## Making Changes
+
+### Staging Changes
+
+```bash
+# Stage specific files
+git add [file-path]
+
+# Stage all changes
+git add .
+
+# Check what's staged
+git status
+```
+
+### Committing Changes
+
+```bash
+# Commit staged changes with a message
+git commit -m "Descriptive message about changes"
+
+# Commit all tracked files with a message
+git commit -am "Descriptive message about changes"
+```
+
+### Good Commit Messages
+
+- Be descriptive but concise
+- Focus on "why" rather than "what" when possible
+- Start with a verb in present tense (e.g., "Add", "Fix", "Update")
+- Do not include AI attribution (no "Created by Claude" or similar)
+
+## Pull Requests
+
+### Creating a Pull Request
+
+After pushing your branch, create a pull request using the MCP tools:
+
+```
+# Format
+mcp__github__create_pull_request:
+  owner: [repository-owner]
+  repo: [repository-name]
+  title: "Implement [task-name]"
+  head: [branch-name]
+  base: master
+  body: "PR description with summary and test plan"
+```
+
+### PR Description Template
+
+```
+## Summary
+- Brief summary of changes
+- Purpose of the changes
+
+## Test Plan
+- Steps to test the changes
+- Expected results
+```
+
+### Updating Task with PR Information
+
+After creating a PR, update the task file with:
+
+```
+**PR**: #[PR-number]
+**PR URL**: [PR-URL]
+**PR Status**: Open
+```
+
+### Handling PR Feedback
+
+When receiving PR feedback:
+
+1. Make requested changes
+2. Commit with a descriptive message
+3. Update the task progress section with:
+   ```
+   [Date]: Updated PR with requested changes: [summary of changes]
+   ```
+
+## Merging Process
+
+When a PR is approved and ready to merge:
+
+```
+# Format
+mcp__github__merge_pull_request:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  merge_method: "squash"  # or "merge" or "rebase"
+```
+
+After merging:
+1. Update the task file with `**PR Status**: Merged`
+2. Move the task from `started` to `completed` folder
+3. Update the task status to `completed` with completion date
+
+## Review Workflows
+
+### Adding PR Comments
+
+```
+# Format
+mcp__github__create_pull_request_review:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  event: "COMMENT"  # or "APPROVE" or "REQUEST_CHANGES"
+  body: "Comment text"
+```
+
+### Approving a PR
+
+```
+# Format
+mcp__github__create_pull_request_review:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  event: "APPROVE"
+  body: "Approval comment"
+```
+
+## Important Notes
+
+- MCP tool configuration is handled at the user level in Claude Code, not at the project level
+- This guide only covers workflow instructions for GitHub operations
+- When the GitHub workflow is enabled, creating PRs is a standard part of task completion
+- Tasks remain in the "started" folder while PRs are under review
+- Tasks only move to "completed" after PR is merged

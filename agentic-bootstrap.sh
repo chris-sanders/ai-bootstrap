@@ -3,13 +3,15 @@
 # This script sets up the agentic workflow structure in your project
 # Usage: ./agentic-bootstrap.sh [options] [project_directory]
 # Options:
-#   --with-adr  Include ADR (Architecture Decision Records) documentation
-#   --force     Overwrite existing files even if they already exist
+#   --with-adr         Include ADR (Architecture Decision Records) documentation
+#   --without-github-mcp  Disable GitHub MCP workflow integration (enabled by default)
+#   --force            Overwrite existing files even if they already exist
 
 set -e
 
 # Parse command line arguments
 INCLUDE_ADR=false
+INCLUDE_GITHUB_MCP=true
 FORCE=false
 PROJECT_DIR="."
 
@@ -17,6 +19,10 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --with-adr)
       INCLUDE_ADR=true
+      shift
+      ;;
+    --without-github-mcp)
+      INCLUDE_GITHUB_MCP=false
       shift
       ;;
     --force)
@@ -79,8 +85,17 @@ if [ "$INCLUDE_ADR" = true ]; then
   echo "Including ADR documentation"
 fi
 
+# Display GitHub MCP status
+if [ "$INCLUDE_GITHUB_MCP" = true ]; then
+  echo "Including GitHub MCP workflow integration (default)"
+else
+  echo "GitHub MCP workflow integration disabled"
+fi
+
 # Create AI readme file
-cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
+if [ "$INCLUDE_GITHUB_MCP" = true ]; then
+  # AI readme with GitHub MCP integration
+  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
 # AI Agent Instructions
 
 This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
@@ -90,15 +105,318 @@ This document provides guidance on how to work within this project's development
 As an AI agent, you should:
 
 1. **Find tasks to work on**:
-   - Look in `/tasks/ready/` for tasks marked with `**Assigned**: ai-agent`
-   - Sort by priority (high → medium → low)
+   - Look in `/tasks/ready/` for tasks to work on
    - Check dependencies to ensure they are completed
 
 2. **Start working on a task**:
    - Move the task file from `/tasks/ready/` to `/tasks/started/`
-   - Update the task's metadata line:
+   - Update the task's metadata:
      - Change `**Status**: ready` to `**Status**: started` 
      - Add `**Started**: YYYY-MM-DD` with today's date
+   - Create a branch for the task:
+     - Use naming convention: `task/[task-filename-without-extension]`
+     - Example: `git checkout -b task/feature-implementation`
+   - Add branch name to metadata: `**Branch**: task/feature-implementation`
+   - Add a progress note with the current date in the Progress Updates section
+
+3. **Work on the task**:
+   - Follow the implementation plan in the task file
+   - Update the task file with progress notes
+   - Create or modify necessary code files
+   - Run tests specified in the validation plan
+   - Commit changes with descriptive messages
+   - Update the task progress regularly with implementation details
+
+4. **Create a Pull Request**:
+   - When implementation is complete, create a PR:
+     - Use the task name as the PR title
+     - Include summary of changes and test plan in the PR body
+   - Update the task's metadata:
+     - Add `**PR**: #[PR-number]` 
+     - Add `**PR URL**: [PR-URL]`
+     - Add `**PR Status**: Open`
+   - Add a progress note with PR creation details
+   - Keep the task in the `/tasks/started/` folder while PR is under review
+
+5. **Handle PR Feedback**:
+   - Make requested changes to address PR feedback
+   - Commit changes with descriptive messages
+   - Update the task progress with details of changes
+   - Keep the task in the `/tasks/started/` folder until PR is merged
+
+6. **Complete a task** (after PR is merged):
+   - Update the task's metadata:
+     - Change `**Status**: started` to `**Status**: completed`
+     - Add `**Completed**: YYYY-MM-DD` with today's date
+     - Update `**PR Status**: Merged`
+   - Document evidence of completion
+   - Move the task file from `/tasks/started/` to `/tasks/completed/`
+   - Update relevant documentation in `/docs/` if necessary
+
+7. **Report completion**:
+   - Summarize what was accomplished
+   - List evidence of completion
+   - Suggest next steps or related tasks
+
+## Context Understanding
+
+Before working on any task:
+
+1. Review `/docs/architecture.md` to understand the system architecture and project structure
+2. Check other documentation in `/docs/components/`
+3. Examine completed tasks in `/tasks/completed/` for similar work
+
+## Code Quality Guidelines
+
+When implementing solutions:
+
+1. Follow the project's coding standards
+2. Write clean, well-documented code
+3. Add appropriate tests
+4. Update documentation to reflect changes
+5. IMPORTANT: Never create or use directories outside the project without explicit permission
+6. For testing, always use local directories within the project and provide cleanup mechanisms
+
+## Communication Format
+
+When reporting progress or completion:
+
+1. Be specific about what was accomplished
+2. Reference specific files and line numbers
+3. Explain any deviations from the task plan
+4. Document any challenges encountered
+5. Suggest improvements to the workflow if applicable
+
+Remember to keep documentation up-to-date as you work, especially in the `/docs/` directory which helps maintain project knowledge.
+
+## Git/GitHub Operations
+
+When working with Git and GitHub:
+
+1. **Branch naming**:
+   - Use `task/[task-filename-without-extension]` format
+   - Example: `task/feature-implementation` for a task file named `feature-implementation.md`
+
+2. **Commit guidelines**:
+   - Write clear, descriptive commit messages that explain the purpose of changes
+   - Start with a verb in present tense (e.g., "Add", "Fix", "Update")
+   - Never include AI attribution in commit messages (no "Created by Claude" or similar)
+   - Make atomic commits that address a single concern
+   - Include only relevant files in your commits
+
+3. **Pull Request format**:
+   - Title: Task name or brief description of changes
+   - Body: Include summary of changes and test plan
+   - Link PR to the task file by updating task metadata
+   - Keep PR focused on a single task or purpose
+
+4. **PR Review process**:
+   - Address all feedback in the PR review
+   - Update the task file with notes about changes made
+   - Wait for approval before merging
+
+5. **Task completion**:
+   - Only move task to completed folder after PR is merged
+   - Include final PR status and merge date in the task file
+
+For detailed guidance on GitHub operations using MCP tools, see `/docs/agentic/github-mcp-guide.md`.
+EOF
+
+  # Create GitHub MCP guide file
+  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/github-mcp-guide.md"
+# GitHub MCP Operations Guide
+
+This document provides guidance on how to use GitHub MCP (Model Capability Provider) tools for Git and GitHub operations as part of the AI workflow.
+
+## Prerequisites
+
+- Claude Code must be configured with GitHub MCP access at the user level
+- The repository must be a valid git repository
+
+## Branch Management
+
+### Creating a New Branch
+
+When starting a task, create a branch using the following naming convention:
+
+```
+task/[task-filename-without-extension]
+```
+
+Example for a task file named `feature-implementation.md`:
+
+```
+git checkout -b task/feature-implementation
+```
+
+### Working with Branches
+
+Basic branch operations:
+
+```bash
+# Check current branch
+git branch
+
+# Switch to another branch
+git checkout [branch-name]
+
+# Create and switch to a new branch
+git checkout -b [branch-name]
+```
+
+## Making Changes
+
+### Staging Changes
+
+```bash
+# Stage specific files
+git add [file-path]
+
+# Stage all changes
+git add .
+
+# Check what's staged
+git status
+```
+
+### Committing Changes
+
+```bash
+# Commit staged changes with a message
+git commit -m "Descriptive message about changes"
+
+# Commit all tracked files with a message
+git commit -am "Descriptive message about changes"
+```
+
+### Good Commit Messages
+
+- Be descriptive but concise
+- Focus on "why" rather than "what" when possible
+- Start with a verb in present tense (e.g., "Add", "Fix", "Update")
+- Do not include AI attribution (no "Created by Claude" or similar)
+
+## Pull Requests
+
+### Creating a Pull Request
+
+After pushing your branch, create a pull request using the MCP tools:
+
+```
+# Format
+mcp__github__create_pull_request:
+  owner: [repository-owner]
+  repo: [repository-name]
+  title: "Implement [task-name]"
+  head: [branch-name]
+  base: master
+  body: "PR description with summary and test plan"
+```
+
+### PR Description Template
+
+```
+## Summary
+- Brief summary of changes
+- Purpose of the changes
+
+## Test Plan
+- Steps to test the changes
+- Expected results
+```
+
+### Updating Task with PR Information
+
+After creating a PR, update the task file with:
+
+```
+**PR**: #[PR-number]
+**PR URL**: [PR-URL]
+**PR Status**: Open
+```
+
+### Handling PR Feedback
+
+When receiving PR feedback:
+
+1. Make requested changes
+2. Commit with a descriptive message
+3. Update the task progress section with:
+   ```
+   [Date]: Updated PR with requested changes: [summary of changes]
+   ```
+
+## Merging Process
+
+When a PR is approved and ready to merge:
+
+```
+# Format
+mcp__github__merge_pull_request:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  merge_method: "squash"  # or "merge" or "rebase"
+```
+
+After merging:
+1. Update the task file with `**PR Status**: Merged`
+2. Move the task from `started` to `completed` folder
+3. Update the task status to `completed` with completion date
+
+## Review Workflows
+
+### Adding PR Comments
+
+```
+# Format
+mcp__github__create_pull_request_review:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  event: "COMMENT"  # or "APPROVE" or "REQUEST_CHANGES"
+  body: "Comment text"
+```
+
+### Approving a PR
+
+```
+# Format
+mcp__github__create_pull_request_review:
+  owner: [repository-owner]
+  repo: [repository-name]
+  pullNumber: [PR-number]
+  event: "APPROVE"
+  body: "Approval comment"
+```
+
+## Important Notes
+
+- MCP tool configuration is handled at the user level in Claude Code, not at the project level
+- This guide only covers workflow instructions for GitHub operations
+- When the GitHub workflow is enabled, creating PRs is a standard part of task completion
+- Tasks remain in the "started" folder while PRs are under review
+- Tasks only move to "completed" after PR is merged
+EOF
+
+else
+  # AI readme without GitHub MCP integration
+  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
+# AI Agent Instructions
+
+This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
+
+## Task Management Workflow
+
+As an AI agent, you should:
+
+1. **Find tasks to work on**:
+   - Look in `/tasks/ready/` for tasks to work on
+   - Check dependencies to ensure they are completed
+
+2. **Start working on a task**:
+   - Move the task file from `/tasks/ready/` to `/tasks/started/`
+   - Add a note with the current date in the Progress Updates section
 
 3. **Work on the task**:
    - Follow the implementation plan in the task file
@@ -109,9 +427,7 @@ As an AI agent, you should:
 4. **Complete a task**:
    - Verify all success criteria are met
    - Document evidence of completion
-   - Update the task's metadata line:
-     - Change `**Status**: started` to `**Status**: completed`
-     - Add `**Completed**: YYYY-MM-DD` with today's date
+   - Add a completion note with the current date in the Progress Updates section
    - Move the task file from `/tasks/started/` to `/tasks/completed/`
    - Update relevant documentation in `/docs/` if necessary
 
@@ -161,8 +477,7 @@ When committing changes:
 4. Include only relevant files in your commits
 5. Make atomic commits that address a single concern
 EOF
-
-# Note: context-map.md has been removed. Project architecture is documented in docs/architecture.md instead
+fi
 
 # Create task template
 cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/task-template.md"
@@ -339,4 +654,5 @@ echo "4. The agent will find tasks in the ready folder and begin working"
 echo ""
 echo "Script options:"
 echo "- To include Architecture Decision Records: --with-adr"
+echo "- To disable GitHub MCP workflow integration (enabled by default): --without-github-mcp"
 echo "- To force overwrite of existing files: --force"
