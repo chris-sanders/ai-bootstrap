@@ -3,6 +3,9 @@
 **Status**: started
 **Started**: 2025-04-10
 **Branch**: task/github-mcp-integration
+**PR**: #1
+**PR URL**: https://github.com/chris-sanders/ai-bootstrap/pull/1
+**PR Status**: Open
 
 ## Objective
 Enhance the AI Bootstrap workflow to incorporate GitHub MCP functionality by default, enabling AI agents to perform Git/GitHub operations as part of the task lifecycle and creating a seamless transition from task completion to code review.
@@ -100,7 +103,7 @@ None
   7. Maintained idempotent behavior with the new features
   8. Updated bootstrap script help text with new flag details
 - [x] Branch name created for this task: `task/github-mcp-integration`
-- [ ] PR number and URL for this task (pending)
+- [x] PR number and URL for this task: [PR #1](https://github.com/chris-sanders/ai-bootstrap/pull/1)
 
 ## Notes
 - This task only configures workflow instructions for GitHub MCP, it does not configure the Claude Code MCP server itself, as that's handled at the user level.
@@ -116,3 +119,5 @@ None
 2025-04-10: Enhanced test script to verify GitHub MCP integration features with additional test cases.
 2025-04-10: Updated component documentation for both bootstrap script and test script.
 2025-04-10: Ran tests successfully, verifying all GitHub MCP integration features work as expected.
+2025-04-10: Added explicit guidance about using existing test scripts rather than manual testing.
+2025-04-10: Created PR #1 for the task using MCP tools as documented in the guide.

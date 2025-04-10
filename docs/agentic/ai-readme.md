@@ -25,7 +25,10 @@ As an AI agent, you should:
    - Follow the implementation plan in the task file
    - Update the task file with progress notes
    - Create or modify necessary code files
-   - Run tests specified in the validation plan
+   - Run tests specified in the validation plan:
+     - Always use existing test scripts and tooling when available
+     - For script changes, run the corresponding test script (e.g., `test_bootstrap.sh`)
+     - Never create manual tests when automated tests exist
    - Commit changes with descriptive messages
    - Update the task progress regularly with implementation details
 
