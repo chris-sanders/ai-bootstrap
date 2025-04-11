@@ -47,6 +47,18 @@ The template system provides a comprehensive approach to manage and build the bo
   - Core script contains only structure and logic without templates
   - Generated script is fully independent after build
 
+## Development Workflow
+- After modifying any templates or the core script, always run the build script to regenerate the distributable script:
+  ```bash
+  ./scripts/build.sh
+  ```
+- Always commit the updated `dist/agentic-bootstrap.sh` along with any template or script changes
+- Run tests after building to ensure the generated script works correctly:
+  ```bash
+  ./test_bootstrap_update.sh
+  ```
+- This build process is specific to this repository's development workflow and not part of the templates provided to other projects
+
 ## Examples
 
 ### Template Organization

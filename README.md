@@ -21,7 +21,7 @@ AI agents have become increasingly capable of helping with software development 
 You can set up the AI Bootstrap workflow directly from the root of your project with a single command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | bash
+curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/dist/agentic-bootstrap.sh | bash
 ```
 
 ### Option 2: Clone and Run
@@ -31,7 +31,7 @@ curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/ag
 git clone https://github.com/chris-sanders/ai-bootstrap.git
 
 # Run the bootstrap script in your project
-./ai-bootstrap/agentic-bootstrap.sh
+./ai-bootstrap/dist/agentic-bootstrap.sh
 ```
 
 ## Usage
@@ -54,16 +54,34 @@ git clone https://github.com/chris-sanders/ai-bootstrap.git
 
 The workflow is designed to be minimalist but can be customized for specific project needs. You can modify the task template, documentation structure, or add additional components as needed.
 
+## Contributing
+
+If you're contributing to this repository, please note:
+
+1. After modifying any templates (in `templates/`) or the core script (`src/bootstrap-core.sh`), you must run the build script to update the distributable file:
+
+```bash
+./scripts/build.sh
+```
+
+2. Always commit the updated `dist/agentic-bootstrap.sh` along with your template or script changes.
+
+3. Run the test script to ensure everything works correctly:
+
+```bash
+./test_bootstrap_update.sh
+```
+
 ## Safety Note
 
 When using the curl | bash installation method, it's always a good practice to examine the script before running it. You can do this by:
 
 ```bash
 # First inspect the script
-curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | less
+curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/dist/agentic-bootstrap.sh | less
 
 # Then run it if you're comfortable with what it does
-curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/agentic-bootstrap.sh | bash
+curl -sSL https://raw.githubusercontent.com/chris-sanders/ai-bootstrap/master/dist/agentic-bootstrap.sh | bash
 ```
 
 The bootstrap script is designed to be non-destructive (it won't overwrite existing files unless you use the `--force` flag) and operates only within the specified project directory.
