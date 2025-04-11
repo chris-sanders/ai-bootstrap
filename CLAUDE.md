@@ -9,10 +9,12 @@ This repository contains the "AI Bootstrap" project, which provides a standardiz
 - Process guidelines for AI agents
 
 ## Task Management
-- Follow the workflow defined in `/docs/agentic/ai-readme.md`
+- IMPORTANT: Always begin by thoroughly reading `/docs/agentic/ai-readme.md` to understand the complete workflow
 - Find tasks in `/tasks/ready/` assigned to AI agents
-- Move tasks through the workflow: backlog → ready → started → completed
+- Move tasks through the workflow: backlog → ready → started → review → completed
 - Update task metadata when changing status (see task template for format)
+- Create branches following the naming convention: `task/[task-filename-without-extension]`
+- Submit PRs when tasks are completed and move them to the review folder
 - When completing tasks, document evidence of completion
 
 ## Coding Guidelines
@@ -29,6 +31,11 @@ This repository contains the "AI Bootstrap" project, which provides a standardiz
 - Document components in `/docs/components/`
 - Keep the architecture document up-to-date as the system evolves
 - Follow a consistent format for all markdown files
+- IMPORTANT: After modifying templates or core script, always run the build script to regenerate the distributable file:
+  ```bash
+  ./scripts/build.sh
+  ```
+- Always commit the updated `dist/agentic-bootstrap.sh` along with any template or script changes
 
 ## Testing
 - Test bootstrap script by running it in a test directory

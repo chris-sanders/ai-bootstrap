@@ -1,4 +1,6 @@
 #!/bin/bash
+# Version: 1.0.0
+# Generated: 2025-04-11 00:32:53 UTC
 # AI Agent Development Workflow Bootstrap Script
 # This script sets up the agentic workflow structure in your project
 # Usage: ./agentic-bootstrap.sh [options] [project_directory]
@@ -40,36 +42,15 @@ AGENTIC_DIR="$PROJECT_DIR/docs/agentic"
 TASKS_DIR="$PROJECT_DIR/tasks"
 DOCS_DIR="$PROJECT_DIR/docs"
 
-# Helper function to create files idempotently
-create_file() {
+# Helper function to check if file exists and should be created
+should_create_file() {
   local file_path="$1"
-  local content_file="$2"
   
-  # Create directories if they don't exist
-  mkdir -p "$(dirname "$file_path")"
-  
-  # Only create/overwrite the file if it doesn't exist or force is enabled
   if [ ! -f "$file_path" ] || [ "$FORCE" = true ]; then
-    cat "$content_file" > "$file_path"
-    echo "Created: $file_path"
+    return 0  # True - should create
   else
-    echo "Skipped: $file_path (already exists, use --force to overwrite)"
+    return 1  # False - should skip
   fi
-}
-
-# Function to create a file with content from a heredoc
-create_file_with_content() {
-  local file_path="$1"
-  local temp_file=$(mktemp)
-  
-  # Write stdin content to temp file
-  cat > "$temp_file"
-  
-  # Create the actual file
-  create_file "$file_path" "$temp_file"
-  
-  # Clean up temp file
-  rm "$temp_file"
 }
 
 echo "Setting up AI Agent Development Workflow in $PROJECT_DIR"
@@ -92,10 +73,12 @@ else
   echo "GitHub MCP workflow integration disabled"
 fi
 
-# Create AI readme file
+# Create AI readme file based on GitHub MCP flag
 if [ "$INCLUDE_GITHUB_MCP" = true ]; then
-  # AI readme with GitHub MCP integration
-  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
+  # Create AI readme with GitHub MCP content
+  README_PATH="$AGENTIC_DIR/ai-readme.md"
+  if should_create_file "$README_PATH"; then
+    cat > "$README_PATH" << 'ENDOFFILE'
 # AI Agent Instructions
 
 This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
@@ -226,10 +209,16 @@ When working with Git and GitHub:
    - Include final PR status and merge date in the task file
 
 For detailed guidance on GitHub operations using MCP tools, see `/docs/agentic/github-mcp-guide.md`.
-EOF
-
-  # Create GitHub MCP guide file
-  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/github-mcp-guide.md"
+ENDOFFILE
+    echo "Created: $README_PATH"
+  else
+    echo "Skipped: $README_PATH (already exists, use --force to overwrite)"
+  fi
+  
+  # Create GitHub MCP guide
+  MCP_GUIDE_PATH="$AGENTIC_DIR/github-mcp-guide.md"
+  if should_create_file "$MCP_GUIDE_PATH"; then
+    cat > "$MCP_GUIDE_PATH" << 'ENDOFFILE'
 # GitHub MCP Operations Guide
 
 This document provides guidance on how to use GitHub MCP (Model Capability Provider) tools for Git and GitHub operations as part of the AI workflow.
@@ -421,11 +410,16 @@ mcp__github__create_pull_request_review:
 - Task workflow: backlog → ready → started → review → completed
 - Tasks move from "started" to "review" folder when PR is created
 - Tasks move from "review" to "completed" after PR is merged
-EOF
-
+ENDOFFILE
+    echo "Created: $MCP_GUIDE_PATH"
+  else
+    echo "Skipped: $MCP_GUIDE_PATH (already exists, use --force to overwrite)"
+  fi
 else
-  # AI readme without GitHub MCP integration
-  cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/ai-readme.md"
+  # Create AI readme without GitHub MCP content
+  README_PATH="$AGENTIC_DIR/ai-readme.md"
+  if should_create_file "$README_PATH"; then
+    cat > "$README_PATH" << 'ENDOFFILE'
 # AI Agent Instructions
 
 This document provides guidance on how to work within this project's development workflow. Follow these instructions to effectively contribute to the project.
@@ -441,22 +435,55 @@ As an AI agent, you should:
 
 2. **Start working on a task**:
    - Move the task file from `/tasks/ready/` to `/tasks/started/`
-   - Add a note with the current date in the Progress Updates section
+   - Update the task's metadata:
+     - Change `**Status**: ready` to `**Status**: started` 
+     - Add `**Started**: YYYY-MM-DD` with today's date
+   - Create a branch for the task:
+     - Use naming convention: `task/[task-filename-without-extension]`
+     - Example: `git checkout -b task/feature-implementation`
+   - Add branch name to metadata: `**Branch**: task/feature-implementation`
+   - Add a progress note with the current date in the Progress Updates section
 
 3. **Work on the task**:
    - Follow the implementation plan in the task file
    - Update the task file with progress notes
    - Create or modify necessary code files
    - Run tests specified in the validation plan
+   - Commit changes with descriptive messages
+   - Update the task progress regularly with implementation details
 
-4. **Complete a task**:
-   - Verify all success criteria are met
+4. **Create a Pull Request**:
+   - When implementation is complete, create a PR:
+     - Use the task name as the PR title
+     - Include summary of changes and test plan in the PR body
+   - Update the task's metadata:
+     - Change `**Status**: started` to `**Status**: review`
+     - Add `**PR**: #[PR-number]` 
+     - Add `**PR URL**: [PR-URL]`
+     - Add `**PR Status**: Open`
+   - Add a progress note with PR creation details
+   - Move the task file from `/tasks/started/` to `/tasks/review/` folder
+
+5. **Handle PR Feedback**:
+   - Make requested changes to address PR feedback
+   - When responding to PR comments:
+     - Always prefix comments with 🤖 emoji
+     - Always end comments with a signature: `---\n[Comment by AI Assistant]`
+     - Example: `🤖 Feedback addressed in latest commit\n\n---\n[Comment by AI Assistant]`
+   - Commit changes with descriptive messages
+   - Update the task progress with details of changes
+   - Keep the task in the `/tasks/review/` folder until PR is merged
+
+6. **Complete a task** (after PR is merged):
+   - Update the task's metadata:
+     - Change `**Status**: review` to `**Status**: completed`
+     - Add `**Completed**: YYYY-MM-DD` with today's date
+     - Update `**PR Status**: Merged`
    - Document evidence of completion
-   - Add a completion note with the current date in the Progress Updates section
-   - Move the task file from `/tasks/started/` to `/tasks/completed/`
+   - Move the task file from `/tasks/review/` to `/tasks/completed/`
    - Update relevant documentation in `/docs/` if necessary
 
-5. **Report completion**:
+7. **Report completion**:
    - Summarize what was accomplished
    - List evidence of completion
    - Suggest next steps or related tasks
@@ -501,11 +528,17 @@ When committing changes:
 3. Follow the project's commit message format
 4. Include only relevant files in your commits
 5. Make atomic commits that address a single concern
-EOF
+ENDOFFILE
+    echo "Created: $README_PATH"
+  else
+    echo "Skipped: $README_PATH (already exists, use --force to overwrite)"
+  fi
 fi
 
 # Create task template
-cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/task-template.md"
+TASK_TEMPLATE_PATH="$AGENTIC_DIR/templates/task-template.md"
+if should_create_file "$TASK_TEMPLATE_PATH"; then
+  cat > "$TASK_TEMPLATE_PATH" << 'ENDOFFILE'
 # Task: [Task Title]
 
 ## Objective
@@ -542,10 +575,16 @@ cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/task-template.md
 
 ## Progress Updates
 (To be filled by AI during implementation)
-EOF
+ENDOFFILE
+  echo "Created: $TASK_TEMPLATE_PATH"
+else
+  echo "Skipped: $TASK_TEMPLATE_PATH (already exists, use --force to overwrite)"
+fi
 
 # Create component documentation template
-cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/component-doc.md"
+COMPONENT_DOC_PATH="$AGENTIC_DIR/templates/component-doc.md"
+if should_create_file "$COMPONENT_DOC_PATH"; then
+  cat > "$COMPONENT_DOC_PATH" << 'ENDOFFILE'
 # Component: [Component Name]
 
 ## Purpose
@@ -570,10 +609,16 @@ cat << 'EOF' | create_file_with_content "$AGENTIC_DIR/templates/component-doc.md
 
 ## Examples
 [Usage examples]
-EOF
+ENDOFFILE
+  echo "Created: $COMPONENT_DOC_PATH"
+else
+  echo "Skipped: $COMPONENT_DOC_PATH (already exists, use --force to overwrite)"
+fi
 
 # Create architecture document
-cat << 'EOF' | create_file_with_content "$DOCS_DIR/architecture.md"
+ARCHITECTURE_PATH="$DOCS_DIR/architecture.md"
+if should_create_file "$ARCHITECTURE_PATH"; then
+  cat > "$ARCHITECTURE_PATH" << 'ENDOFFILE'
 # System Architecture
 
 This document describes the overall system architecture.
@@ -592,11 +637,17 @@ This document describes the overall system architecture.
 
 ## Technologies
 [Key technologies used]
-EOF
+ENDOFFILE
+  echo "Created: $ARCHITECTURE_PATH"
+else
+  echo "Skipped: $ARCHITECTURE_PATH (already exists, use --force to overwrite)"
+fi
 
 # Create ADR template if enabled
 if [ "$INCLUDE_ADR" = true ]; then
-  cat << 'EOF' | create_file_with_content "$DOCS_DIR/decisions/ADR-template.md"
+  ADR_TEMPLATE_PATH="$DOCS_DIR/decisions/ADR-template.md"
+  if should_create_file "$ADR_TEMPLATE_PATH"; then
+    cat > "$ADR_TEMPLATE_PATH" << 'ENDOFFILE'
 # Decision Record: [Title]
 
 ## Status
@@ -617,11 +668,17 @@ if [ "$INCLUDE_ADR" = true ]; then
 
 ## Implementation
 [Describe implementation details if applicable]
-EOF
+ENDOFFILE
+    echo "Created: $ADR_TEMPLATE_PATH"
+  else
+    echo "Skipped: $ADR_TEMPLATE_PATH (already exists, use --force to overwrite)"
+  fi
 fi
 
 # Create a sample task
-cat << 'EOF' | create_file_with_content "$TASKS_DIR/backlog/TASK-001-example.md"
+EXAMPLE_TASK_PATH="$TASKS_DIR/backlog/TASK-001-example.md"
+if should_create_file "$EXAMPLE_TASK_PATH"; then
+  cat > "$EXAMPLE_TASK_PATH" << 'ENDOFFILE'
 # Task: Example Task
 
 ## Objective
@@ -658,7 +715,11 @@ This is just an example task to get started.
 
 ## Progress Updates
 (To be filled by AI during implementation)
-EOF
+ENDOFFILE
+  echo "Created: $EXAMPLE_TASK_PATH"
+else
+  echo "Skipped: $EXAMPLE_TASK_PATH (already exists, use --force to overwrite)"
+fi
 
 echo "Workflow initialized successfully!"
 echo ""

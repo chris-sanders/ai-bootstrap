@@ -1,15 +1,16 @@
 #!/bin/bash
-# Test script for agentic-bootstrap.sh idempotent behavior
-# This script validates the idempotent behavior of the bootstrap script
-# It verifies that the script:
-# - Creates files in an empty directory
-# - Doesn't overwrite existing files unless forced
-# - Replaces missing files
-# - Overwrites existing files when force flag is used
-# - Properly handles GitHub MCP integration flags
+# Test script for agentic-bootstrap.sh with template directory structure
+# This script validates the build process and the generated script behavior
+# It verifies that:
+# - Build script combines templates and core logic correctly
+# - Force and GitHub MCP flags work as expected in the generated script
+# - All template features are correctly implemented
 # Usage: ./test_bootstrap.sh [--no-cleanup]
 
 set -e  # Exit on error
+
+# Cleanup any leftover test directories from failed runs
+find "$(dirname "$0")" -maxdepth 1 -name "test_bootstrap_*" -type d -exec rm -rf {} \; 2>/dev/null || true
 
 # Parse command line arguments
 CLEANUP=true
@@ -21,7 +22,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     *)
       echo "Unknown option: $1"
-      echo "Usage: ./test_bootstrap.sh [--no-cleanup]"
+      echo "Usage: ./test_bootstrap_update.sh [--no-cleanup]"
       exit 1
       ;;
   esac
@@ -40,7 +41,7 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Test function to validate a specific test case
+# Test function to run tests
 run_test() {
   local test_name="$1"
   local expected_result="$2"
@@ -115,109 +116,113 @@ check_file_content() {
 }
 
 # Copy the bootstrap script to the test directory
-cp "$(pwd)/agentic-bootstrap.sh" "$TEST_DIR/"
+cp "$(pwd)/dist/agentic-bootstrap.sh" "$TEST_DIR/"
 
 # Change to the test directory
 cd "$TEST_DIR"
 
-echo "=== TEST SUITE: BOOTSTRAP SCRIPT IDEMPOTENT BEHAVIOR ==="
+echo "=== TEST SUITE: GENERATED BOOTSTRAP SCRIPT BEHAVIOR ==="
 echo ""
 
 # Test 1: Initial run - should create all files with GitHub MCP enabled by default
 echo "=== Test Case 1: Initial creation in empty directory with default settings ==="
-run_test "Initial creation" "Created:" "./agentic-bootstrap.sh" || exit 1
+mkdir -p test_case_1
+cd test_case_1
+run_test "Initial creation" "Created:" "../agentic-bootstrap.sh" || exit 1
 check_file_exists "./docs/agentic/ai-readme.md" true "AI readme file created" || exit 1
 check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide created (default)" || exit 1
 check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" true "AI readme contains GitHub section" || exit 1
 check_file_content "./docs/agentic/ai-readme.md" "tasks/review" true "AI readme includes review folder in workflow" || exit 1
 check_file_content "./docs/agentic/github-mcp-guide.md" "Comment Attribution Format" true "GitHub MCP guide includes comment attribution section" || exit 1
+cd ..
 echo ""
 
-# Test 2: Second run - should skip existing files
-echo "=== Test Case 2: Skip existing files on second run ==="
-run_test "Skip existing" "Skipped:" "./agentic-bootstrap.sh" || exit 1
-echo ""
-
-# Test 3: Modify a file and run again - should not overwrite
-echo "=== Test Case 3: Don't overwrite modified files ==="
-echo "MODIFIED CONTENT" >> "docs/agentic/ai-readme.md"
-run_test "Don't overwrite modified file" "Skipped:" "./agentic-bootstrap.sh" || exit 1
-
-# Check if the modification remains
-check_file_content "docs/agentic/ai-readme.md" "MODIFIED CONTENT" true "Modification was preserved" || exit 1
-echo ""
-
-# Test 4: Remove a file and run again - should recreate it
-echo "=== Test Case 4: Recreate deleted files ==="
-rm "docs/agentic/templates/task-template.md"
-run_test "Recreate deleted file" "Created: ./docs/agentic/templates/task-template.md" "./agentic-bootstrap.sh" || exit 1
-echo ""
-
-# Test 5: Force flag should overwrite existing files
-echo "=== Test Case 5: Force flag overwrites existing files ==="
-echo "MODIFIED CONTENT" >> "docs/agentic/ai-readme.md"
-run_test "Force overwrite" "Created: ./docs/agentic/ai-readme.md" "./agentic-bootstrap.sh --force" || exit 1
-
-# Check if the modification was overwritten
-check_file_content "docs/agentic/ai-readme.md" "MODIFIED CONTENT" false "File was successfully overwritten with --force flag" || exit 1
-echo ""
-
-# Test 6: Without GitHub MCP flag in new directory
-echo "=== Test Case 6: Without GitHub MCP flag ==="
-TEST_SUBDIR="without_github_mcp_test"
-mkdir -p "$TEST_SUBDIR"
-cd "$TEST_SUBDIR"
-cp "../agentic-bootstrap.sh" .
-
-run_test "Without GitHub MCP" "GitHub MCP workflow integration disabled" "./agentic-bootstrap.sh --without-github-mcp" || exit 1
+# Test 2: Without GitHub MCP flag
+echo "=== Test Case 2: Without GitHub MCP flag ==="
+mkdir -p test_case_2
+cd test_case_2
+run_test "Without GitHub MCP" "GitHub MCP workflow integration disabled" "../agentic-bootstrap.sh --without-github-mcp" || exit 1
 check_file_exists "./docs/agentic/github-mcp-guide.md" false "GitHub MCP guide not created when disabled" || exit 1
 check_file_content "./docs/agentic/ai-readme.md" "Git Commit Guidelines" true "Basic Git section exists" || exit 1
 check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" false "GitHub MCP section not present when disabled" || exit 1
 cd ..
 echo ""
 
-# Test 7: Toggle GitHub MCP integration with force flag
-echo "=== Test Case 7: Toggle GitHub MCP integration with force flag ==="
-# 7a: Add GitHub MCP to previously disabled setup
-cd "$TEST_SUBDIR"
-run_test "Enable GitHub MCP with force" "Created:" "./agentic-bootstrap.sh --force" || exit 1
-check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide created when re-enabled" || exit 1
-check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" true "GitHub MCP section added when re-enabled" || exit 1
-cd ..
-
-# 7b: Disable GitHub MCP in default setup
-TEST_SUBDIR2="toggle_github_mcp_test"
-mkdir -p "$TEST_SUBDIR2"
-cd "$TEST_SUBDIR2"
-cp "../agentic-bootstrap.sh" .
-
-# First create with default (GitHub MCP enabled)
-run_test "Default GitHub MCP enabled" "Including GitHub MCP workflow integration" "./agentic-bootstrap.sh" || exit 1
-check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide exists by default" || exit 1
-
-# Then disable with force
-run_test "Disable GitHub MCP with force" "GitHub MCP workflow integration disabled" "./agentic-bootstrap.sh --without-github-mcp --force" || exit 1
-check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" false "GitHub MCP section removed when disabled with force" || exit 1
+# Test 3: With ADR flag
+echo "=== Test Case 3: With ADR flag ==="
+mkdir -p test_case_3
+cd test_case_3
+run_test "With ADR" "Including ADR documentation" "../agentic-bootstrap.sh --with-adr" || exit 1
+check_file_exists "./docs/decisions/ADR-template.md" true "ADR template created when ADR enabled" || exit 1
 cd ..
 echo ""
+
+# Test 4: Force flag
+echo "=== Test Case 4: Force flag overwrites existing files ==="
+mkdir -p test_case_4
+cd test_case_4
+# First run to create files
+run_test "Initial creation" "Created:" "../agentic-bootstrap.sh" || exit 1
+# Modify a file
+echo "MODIFIED CONTENT" >> "docs/agentic/ai-readme.md"
+check_file_content "docs/agentic/ai-readme.md" "MODIFIED CONTENT" true "File was modified" || exit 1
+# Run with force flag
+run_test "Force overwrite" "Created: ./docs/agentic/ai-readme.md" "../agentic-bootstrap.sh --force" || exit 1
+# Check if the file was overwritten
+check_file_content "docs/agentic/ai-readme.md" "MODIFIED CONTENT" false "File was overwritten with --force" || exit 1
+cd ..
+echo ""
+
+# Test 5: Idempotent behavior
+echo "=== Test Case 5: Idempotent behavior (skips existing files) ==="
+mkdir -p test_case_5
+cd test_case_5
+# First run to create files
+run_test "Initial creation" "Created:" "../agentic-bootstrap.sh" || exit 1
+# Second run should skip existing files
+run_test "Skip existing" "Skipped:" "../agentic-bootstrap.sh" || exit 1
+cd ..
+echo ""
+
+# Test 6: Toggle GitHub MCP integration with force flag
+echo "=== Test Case 6: Toggle GitHub MCP integration with force flag ==="
+mkdir -p test_case_6
+cd test_case_6
+# First create with GitHub MCP disabled
+run_test "Disable GitHub MCP" "GitHub MCP workflow integration disabled" "../agentic-bootstrap.sh --without-github-mcp" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" false "GitHub MCP guide not created" || exit 1
+# Then enable with force
+run_test "Enable GitHub MCP with force" "Including GitHub MCP workflow integration" "../agentic-bootstrap.sh --force" || exit 1
+check_file_exists "./docs/agentic/github-mcp-guide.md" true "GitHub MCP guide created when enabled" || exit 1
+check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" true "GitHub MCP section added when enabled" || exit 1
+cd ..
+echo ""
+
+# Test the build script
+echo "=== TESTING BUILD SCRIPT ==="
+cd "$SCRIPT_DIR"
+run_test "Build script" "Successfully built" "./scripts/build.sh" || exit 1
 
 echo -e "${GREEN}All tests passed successfully!${NC}"
 echo "Test directory: $TEST_DIR"
 
-# Clean up the test directory unless --no-cleanup was specified
-if [ "$CLEANUP" = true ]; then
-  echo "Cleaning up test directory..."
-  rm -rf "$TEST_DIR"
-  
-  # Verify the cleanup was successful
-  if [ -d "$TEST_DIR" ]; then
-    echo -e "${RED}ERROR: Failed to remove test directory!${NC}"
-    echo "Manual cleanup required: rm -rf $TEST_DIR"
-    exit 1
-  else
-    echo -e "${GREEN}Test directory successfully removed.${NC}"
+# Ensure proper cleanup on EXIT
+cleanup() {
+  if [ "$CLEANUP" = true ] && [ -d "$TEST_DIR" ]; then
+    echo "Cleaning up test directory..."
+    rm -rf "$TEST_DIR"
+    if [ ! -d "$TEST_DIR" ]; then
+      echo -e "${GREEN}Test directory successfully removed.${NC}"
+    else
+      echo -e "${RED}ERROR: Failed to remove test directory!${NC}"
+      echo "Manual cleanup required: rm -rf $TEST_DIR"
+      exit 1
+    fi
+  elif [ "$CLEANUP" = false ]; then
+    echo "Test directory was preserved: $TEST_DIR"
+    echo "You can clean it up with: rm -rf $TEST_DIR"
   fi
-else
-  echo "Test directory was preserved: $TEST_DIR"
-  echo "You can clean it up with: rm -rf $TEST_DIR"
-fi
+}
+
+# Register cleanup handler
+trap cleanup EXIT

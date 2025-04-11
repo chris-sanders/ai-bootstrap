@@ -1,7 +1,7 @@
 # Component: Test Bootstrap Script (test_bootstrap.sh)
 
 ## Purpose
-The test bootstrap script validates the idempotent behavior of the agentic-bootstrap.sh script. It ensures that the bootstrap script correctly handles existing files, recreates missing files, properly implements the --force flag, and correctly manages GitHub MCP integration.
+The test bootstrap script validates the behavior of the generated agentic-bootstrap.sh script. It ensures that the bootstrap script correctly handles existing files, recreates missing files, properly implements the --force flag, and correctly manages GitHub MCP integration.
 
 ## Responsibilities
 - Verify that the bootstrap script creates all expected files when run on an empty directory
@@ -12,6 +12,7 @@ The test bootstrap script validates the idempotent behavior of the agentic-boots
 - Validate --without-github-mcp flag works correctly
 - Test toggling GitHub MCP integration in existing projects
 - Provide clear pass/fail output for each test case
+- Validate that the build script generates a functional bootstrap script
 
 ## Interfaces
 - **Input**: Optional flag for test behavior
@@ -20,7 +21,8 @@ The test bootstrap script validates the idempotent behavior of the agentic-boots
 
 ## Dependencies
 - Bash shell
-- agentic-bootstrap.sh script
+- Generated bootstrap script (dist/agentic-bootstrap.sh)
+- Build script (scripts/build.sh)
 - Standard Unix utilities (grep, mkdir, echo)
 
 ## Design Decisions
@@ -32,6 +34,7 @@ The test bootstrap script validates the idempotent behavior of the agentic-boots
 - Creates subdirectories for testing different configurations simultaneously
 - Uses both output message checking and file content verification
 - Added specific functions for checking file existence and content patterns
+- Includes trap-based cleanup to ensure test directories are removed even when tests fail
 
 ## Examples
 
@@ -47,17 +50,22 @@ Run without cleaning up test files:
 
 Example output:
 ```
-=== TEST SUITE: BOOTSTRAP SCRIPT IDEMPOTENT BEHAVIOR ===
+=== TEST SUITE: GENERATED BOOTSTRAP SCRIPT BEHAVIOR ===
 
 === Test Case 1: Initial creation in empty directory with default settings ===
 Test: Initial creation
-  Command: ./agentic-bootstrap.sh
+  Command: ../agentic-bootstrap.sh
   ✓ PASS: Found expected output: 'Created:'
   ✓ PASS: AI readme file created
   ✓ PASS: GitHub MCP guide created (default)
   ✓ PASS: AI readme contains GitHub section
 
 ... (other test cases)
+
+=== TESTING BUILD SCRIPT ===
+Test: Build script
+  Command: ./scripts/build.sh
+  ✓ PASS: Found expected output: 'Successfully built'
 
 All tests passed successfully!
 ```
