@@ -9,6 +9,9 @@
 
 set -e  # Exit on error
 
+# Cleanup any leftover test directories from failed runs
+find "$(dirname "$0")" -maxdepth 1 -name "test_bootstrap_update_*" -type d -exec rm -rf {} \; 2>/dev/null || true
+
 # Parse command line arguments
 CLEANUP=true
 while [[ $# -gt 0 ]]; do
@@ -112,13 +115,8 @@ check_file_content() {
   fi
 }
 
-# Test the build script
-echo "=== TESTING BUILD SCRIPT ==="
-# Run the build script again to ensure it works
-run_test "Build script" "Successfully built" "./scripts/build.sh" || exit 1
-
-# Copy the generated bootstrap script to the test directory
-cp "${SCRIPT_DIR}/dist/agentic-bootstrap.sh" "$TEST_DIR/"
+# Copy the bootstrap script to the test directory
+cp "$(pwd)/dist/agentic-bootstrap.sh" "$TEST_DIR/"
 
 # Change to the test directory
 cd "$TEST_DIR"
@@ -187,7 +185,7 @@ cd ..
 echo ""
 
 # Test 6: Toggle GitHub MCP integration with force flag
-echo "=== Test Case 6: Toggle GitHub MCP integration with force flag ==="
+echo "=== Test Case 6: Toggle GitHub MCP integration with force flag ===
 mkdir -p test_case_6
 cd test_case_6
 # First create with GitHub MCP disabled
@@ -200,24 +198,31 @@ check_file_content "./docs/agentic/ai-readme.md" "Git/GitHub Operations" true "G
 cd ..
 echo ""
 
+# Test the build script
+echo "=== TESTING BUILD SCRIPT ==="
+cd "$SCRIPT_DIR"
+run_test "Build script" "Successfully built" "./scripts/build.sh" || exit 1
+
 echo -e "${GREEN}All tests passed successfully!${NC}"
 echo "Test directory: $TEST_DIR"
 
-# Clean up the test directory unless --no-cleanup was specified
-if [ "$CLEANUP" = true ]; then
-  echo "Cleaning up test directory..."
-  cd "$SCRIPT_DIR"
-  rm -rf "$TEST_DIR"
-  
-  # Verify the cleanup was successful
-  if [ -d "$TEST_DIR" ]; then
-    echo -e "${RED}ERROR: Failed to remove test directory!${NC}"
-    echo "Manual cleanup required: rm -rf $TEST_DIR"
-    exit 1
-  else
-    echo -e "${GREEN}Test directory successfully removed.${NC}"
+# Ensure proper cleanup on EXIT
+cleanup() {
+  if [ "$CLEANUP" = true ] && [ -d "$TEST_DIR" ]; then
+    echo "Cleaning up test directory..."
+    rm -rf "$TEST_DIR"
+    if [ ! -d "$TEST_DIR" ]; then
+      echo -e "${GREEN}Test directory successfully removed.${NC}"
+    else
+      echo -e "${RED}ERROR: Failed to remove test directory!${NC}"
+      echo "Manual cleanup required: rm -rf $TEST_DIR"
+      exit 1
+    fi
+  elif [ "$CLEANUP" = false ]; then
+    echo "Test directory was preserved: $TEST_DIR"
+    echo "You can clean it up with: rm -rf $TEST_DIR"
   fi
-else
-  echo "Test directory was preserved: $TEST_DIR"
-  echo "You can clean it up with: rm -rf $TEST_DIR"
-fi
+}
+
+# Register cleanup handler
+trap cleanup EXIT
