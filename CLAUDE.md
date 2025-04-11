@@ -17,6 +17,14 @@ This repository contains the "AI Bootstrap" project, which provides a standardiz
 - Submit PRs when tasks are completed and move them to the review folder
 - When completing tasks, document evidence of completion
 
+### PR Cleanup Workflow
+- IMPORTANT: After a PR has been merged, ALWAYS switch to the master branch
+- Pull latest changes with `git pull` to ensure your local master is up-to-date
+- Update the task file to change status to "completed" and add the completion date
+- Move the task file from `/tasks/review/` to `/tasks/completed/`
+- Commit these changes to the master branch
+- Optionally delete the feature branch if it's no longer needed
+
 ## Coding Guidelines
 - Write clean, well-documented bash scripts
 - Use meaningful variable names with snake_case
