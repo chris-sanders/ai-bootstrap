@@ -1,4 +1,4 @@
-# Component: Test Bootstrap Script (test_bootstrap_update.sh)
+# Component: Test Bootstrap Script (test_bootstrap.sh)
 
 ## Purpose
 The test bootstrap script validates the behavior of the generated agentic-bootstrap.sh script. It ensures that the bootstrap script correctly handles existing files, recreates missing files, properly implements the --force flag, and correctly manages GitHub MCP integration.
@@ -40,12 +40,12 @@ The test bootstrap script validates the behavior of the generated agentic-bootst
 
 Basic usage:
 ```bash
-./test_bootstrap_update.sh
+./test_bootstrap.sh
 ```
 
 Run without cleaning up test files:
 ```bash
-./test_bootstrap_update.sh --no-cleanup
+./test_bootstrap.sh --no-cleanup
 ```
 
 Example output:

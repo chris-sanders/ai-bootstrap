@@ -1,16 +1,16 @@
 #!/bin/bash
-# Test script for updated agentic-bootstrap.sh with template directory structure
+# Test script for agentic-bootstrap.sh with template directory structure
 # This script validates the build process and the generated script behavior
 # It verifies that:
 # - Build script combines templates and core logic correctly
-# - Generated script behaves the same as the original
 # - Force and GitHub MCP flags work as expected in the generated script
-# Usage: ./test_bootstrap_update.sh [--no-cleanup]
+# - All template features are correctly implemented
+# Usage: ./test_bootstrap.sh [--no-cleanup]
 
 set -e  # Exit on error
 
 # Cleanup any leftover test directories from failed runs
-find "$(dirname "$0")" -maxdepth 1 -name "test_bootstrap_update_*" -type d -exec rm -rf {} \; 2>/dev/null || true
+find "$(dirname "$0")" -maxdepth 1 -name "test_bootstrap_*" -type d -exec rm -rf {} \; 2>/dev/null || true
 
 # Parse command line arguments
 CLEANUP=true
@@ -30,7 +30,7 @@ done
 
 # Create a temporary test directory in the local project
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEST_DIR="${SCRIPT_DIR}/test_bootstrap_update_$(date +%s)"
+TEST_DIR="${SCRIPT_DIR}/test_bootstrap_$(date +%s)"
 mkdir -p "$TEST_DIR"
 echo "Using test directory: $TEST_DIR"
 echo ""
