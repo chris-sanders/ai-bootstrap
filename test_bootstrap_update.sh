@@ -185,7 +185,7 @@ cd ..
 echo ""
 
 # Test 6: Toggle GitHub MCP integration with force flag
-echo "=== Test Case 6: Toggle GitHub MCP integration with force flag ===
+echo "=== Test Case 6: Toggle GitHub MCP integration with force flag ==="
 mkdir -p test_case_6
 cd test_case_6
 # First create with GitHub MCP disabled
