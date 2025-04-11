@@ -1,6 +1,6 @@
 #!/bin/bash
 # Version: 1.0.0
-# Generated: 2025-04-11 00:12:33 UTC
+# Generated: 2025-04-11 00:32:53 UTC
 # AI Agent Development Workflow Bootstrap Script
 # This script sets up the agentic workflow structure in your project
 # Usage: ./agentic-bootstrap.sh [options] [project_directory]
