@@ -12,7 +12,8 @@ As an AI agent, you should:
    - Check dependencies to ensure they are completed
 
 2. **Start working on a task**:
-   - Move the task file from `/tasks/ready/` to `/tasks/started/`
+   - First verify the task doesn't exist in multiple folders: `git ls-files tasks/*/*.md | grep <task-name>`
+   - Move the task file using git mv: `git mv /tasks/ready/task-name.md /tasks/started/`
    - Update the task's metadata:
      - Change `**Status**: ready` to `**Status**: started` 
      - Add `**Started**: YYYY-MM-DD` with today's date
@@ -21,6 +22,7 @@ As an AI agent, you should:
      - Example: `git checkout -b task/feature-implementation`
    - Add branch name to metadata: `**Branch**: task/feature-implementation`
    - Add a progress note with the current date in the Progress Updates section
+   - Commit these changes together: `git commit -m "Start task: task-name"`
 
 3. **Work on the task**:
    - Follow the implementation plan in the task file
@@ -43,7 +45,10 @@ As an AI agent, you should:
      - Add `**PR URL**: [PR-URL]`
      - Add `**PR Status**: Open`
    - Add a progress note with PR creation details
-   - Move the task file from `/tasks/started/` to `/tasks/review/` folder
+   - Verify the task doesn't exist in multiple folders: `git ls-files tasks/*/*.md | grep <task-name>`
+   - Move the task file using git: `git mv /tasks/started/task-name.md /tasks/review/`
+   - Commit these changes: `git commit -m "Move task to review: task-name"`
+   - Push the changes to the PR branch
 
 5. **Handle PR Feedback**:
    - Make requested changes to address PR feedback
@@ -56,12 +61,19 @@ As an AI agent, you should:
    - Keep the task in the `/tasks/review/` folder until PR is merged
 
 6. **Complete a task** (after PR is merged):
+   - IMPORTANT: First switch to master branch: `git checkout master`
+   - Pull latest changes: `git pull`
+   - Verify the task only exists in the review folder: `git ls-files tasks/*/*.md | grep <task-name>`
+   - If duplicates are found in multiple folders:
+     - Keep ONLY the version in the most advanced stage
+     - Use `git rm` to remove duplicate copies in other folders
    - Update the task's metadata:
      - Change `**Status**: review` to `**Status**: completed`
      - Add `**Completed**: YYYY-MM-DD` with today's date
      - Update `**PR Status**: Merged`
    - Document evidence of completion
-   - Move the task file from `/tasks/review/` to `/tasks/completed/`
+   - Move the task file using git: `git mv /tasks/review/task-name.md /tasks/completed/`
+   - Commit these changes to master: `git commit -m "Complete task: task-name"`
    - Update relevant documentation in `/docs/` if necessary
 
 7. **Report completion**:
@@ -99,6 +111,26 @@ When reporting progress or completion:
 5. Suggest improvements to the workflow if applicable
 
 Remember to keep documentation up-to-date as you work, especially in the `/docs/` directory which helps maintain project knowledge.
+
+## Handling Merge Conflicts With Task Files
+
+If you encounter merge conflicts with task files:
+
+1. **Identify the correct version**:
+   - The correct version is always the one in the most advanced workflow stage:
+     - completed > review > started > ready > backlog
+   - Check all task folders: `git ls-files tasks/*/*.md | grep <task-name>`
+
+2. **Resolve the conflict**:
+   - Keep ONLY the version in the most advanced stage
+   - Ensure metadata is up-to-date with the latest status
+   - Remove duplicate copies in other task folders with `git rm`
+   - Commit the resolution with a clear message: `git commit -m "Resolve task duplication: task-name"`
+
+3. **Prevent future conflicts**:
+   - Always use `git mv` to move tasks between folders
+   - Always commit task file moves in a separate commit from code changes
+   - Check for duplicates before and after merging branches
 
 ## Git/GitHub Operations
 

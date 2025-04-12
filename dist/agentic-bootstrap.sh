@@ -1,6 +1,6 @@
 #!/bin/bash
 # Version: 1.0.0
-# Generated: 2025-04-11 00:32:53 UTC
+# Generated: 2025-04-12 20:14:46 UTC
 # AI Agent Development Workflow Bootstrap Script
 # This script sets up the agentic workflow structure in your project
 # Usage: ./agentic-bootstrap.sh [options] [project_directory]
@@ -540,6 +540,15 @@ TASK_TEMPLATE_PATH="$AGENTIC_DIR/templates/task-template.md"
 if should_create_file "$TASK_TEMPLATE_PATH"; then
   cat > "$TASK_TEMPLATE_PATH" << 'ENDOFFILE'
 # Task: [Task Title]
+
+## Metadata
+**Status**: backlog
+**Started**: 
+**PR**: 
+**PR URL**: 
+**PR Status**: 
+**Branch**: 
+**Completed**: 
 
 ## Objective
 [Clear, measurable objective of this task]

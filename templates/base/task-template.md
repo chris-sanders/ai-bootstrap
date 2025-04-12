@@ -1,5 +1,14 @@
 # Task: [Task Title]
 
+## Metadata
+**Status**: backlog
+**Started**: 
+**PR**: 
+**PR URL**: 
+**PR Status**: 
+**Branch**: 
+**Completed**: 
+
 ## Objective
 [Clear, measurable objective of this task]
 
